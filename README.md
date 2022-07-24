@@ -76,7 +76,7 @@ const tableDataState = reactive({
 const vStickyTop = ref(0)
 
 onMounted(() => {
-    // 动态 获取自身距离顶部的距离
+    // 动态 获取自身距离顶部的距离 意思就是头部就定在当前位置
     vStickyTop.value = document.querySelector<HTMLElement>(".el-sticky-table")?.getBoundingClientRect().top || 0
 
 })

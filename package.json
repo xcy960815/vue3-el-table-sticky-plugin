@@ -13,10 +13,10 @@
         "serve": "vue-cli-service serve"
     },
     "keywords": [
-        "vue3-plugin-template",
         "vue3-el-table-sticky-plugin",
-        "vue3",
-        "ts"
+        "el-table-sticky",
+        "vue3-el-table",
+        "sticky"
     ],
     "author": "xuchongyu",
     "peerDependencies": {

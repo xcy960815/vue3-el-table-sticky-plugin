@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "module": "esnext",
+    "noImplicitAny": false,
+    "removeComments": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "jsx": "preserve",
+    "noLib": false,
+    "target": "es5",
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    },
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationDir": "./temp",
+  },
+  "exclude": [
+    "example",
+    "src"
+  ],
+  "files": [
+    "./src/index.ts",
+  ]
+}

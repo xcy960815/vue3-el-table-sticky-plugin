@@ -64,7 +64,13 @@ app.mount("#app");
 </template>
 
 <script lang='ts' setup>
-import { onMounted,  ref } from "vue"
+import { onMounted, reactive ref } from "vue"
+
+const tableDataState = reactive({
+    tableData:[
+        ...多条数据
+    ]
+})
 
 // 绑定动态数据
 const vStickyTop = ref(0)
@@ -86,6 +92,8 @@ onMounted(() => {
 }
 </style>
 ```
+#### TODO
+1. 因为时间问题，暂不支持全局配置。未来要支持全局；
 
 
 

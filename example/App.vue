@@ -1,6 +1,6 @@
 <template>
     <div class='vue3-el-table-sticky-plugin'>
-        <div class="vue3-el-table-sticky-plugin-title">
+        <!-- <div class="vue3-el-table-sticky-plugin-title">
             <h3>vue3-el-table-sticky-plugin-demo</h3>
             <el-button class="handle-buttton" @click="handleTableWidthAdd10">
                 控制table宽度 + 10%
@@ -8,11 +8,33 @@
             <el-button class="handle-buttton" @click="handleTableWidthReduce10">
                 控制table宽度 - 10%
             </el-button>
-        </div>
-
+        </div> -->
+        <el-form inline class="demo-form-inline">
+            <el-form-item label="Approved by">
+                <el-input placeholder="Approved by" />
+            </el-form-item>
+            <el-form-item label="Approved by">
+                <el-input placeholder="Approved by" />
+            </el-form-item>
+            <el-form-item label="Approved by">
+                <el-input placeholder="Approved by" />
+            </el-form-item>
+            <el-form-item label="Approved by">
+                <el-input placeholder="Approved by" />
+            </el-form-item>
+            <el-form-item label="Approved by">
+                <el-input placeholder="Approved by" />
+            </el-form-item>
+            <el-form-item label="Approved by">
+                <el-input placeholder="Approved by" />
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary">Query</el-button>
+            </el-form-item>
+        </el-form>
         <el-table class="el-sticky-table" :data="tableDataState.tableData"
-            :header-cell-style="{ background: 'rgb(240, 240, 240)' }" border
-            v-sticky="{ top: vStickyTop, parent: '.vue3-el-table-sticky-plugin' }" :style="{ width: `${tableWidth}%` }">
+            :header-cell-style="{ background: 'rgb(240, 240, 240)' }" border v-sticky
+            :style="{ width: `${tableWidth}%` }">
             <el-table-column fixed="left" prop="date" label="Date" width="150" />
             <el-table-column fixed="left" prop="name" label="Name" width="250" />
             <el-table-column prop="state" label="State" width="250" />
@@ -63,6 +85,7 @@ onMounted(() => {
 
     // 获取自身距离顶部的距离
     vStickyTop.value = document.querySelector<HTMLElement>(".el-sticky-table")?.getBoundingClientRect().top || 0
+    vStickyTop.value = vStickyTop.value - 10
 
     // 模拟数据
     for (let index = 0; index < 50; index++) {
@@ -86,27 +109,17 @@ onMounted(() => {
     height: 100%;
     width: 100%;
 
-    .vue3-table-sticky-test-box {
-        display: flex;
-        width: 100%;
-        max-width: 100%;
-        // overflow: hidden;
-        position: relative;
-
-        .other-dom-box {
-            transition: all 0.5s;
-            width: 200px;
-            min-width: 200px;
-            background-color: aqua;
-            height: 100px;
-        }
-
-        .el-table-box {
-            flex: 1
-        }
+    .demo-form-inline {
+        padding: 15px;
+        // margin: 15px;
+        position: sticky;
+        top: 0;
+        z-index: 99;
+        background-color: #fff;
     }
 
     .vue3-el-table-sticky-plugin-title {
+
         text-align: center;
         position: sticky;
         top: 0;
@@ -116,7 +129,7 @@ onMounted(() => {
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: #fff;
+        background-color: aqua;
     }
 
 

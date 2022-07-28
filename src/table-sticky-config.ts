@@ -201,7 +201,7 @@ export const tableSticky: TableSticky = {
 
     const { vnode, el, eventType } = option
 
-    const uid = (vnode.ref as VNodeNormalizedRefAtom).i.uid
+    const uid = (vnode?.ref as VNodeNormalizedRefAtom).i.uid
 
     const { tableHeaderWrapperDom, tableBodyWrapperDom, top: fixedTop } = tableStickyConfigs[uid]
 
@@ -243,7 +243,7 @@ export const tableSticky: TableSticky = {
 
     const { vnode } = option
 
-    const uid = (vnode.ref as VNodeNormalizedRefAtom).i.uid
+    const uid = (vnode?.ref as VNodeNormalizedRefAtom).i.uid
 
     const { tableHeaderWrapperDom, tableBodyWrapperDom } = tableStickyConfigs[uid]
 
@@ -273,7 +273,7 @@ export const tableSticky: TableSticky = {
 
     const { vnode } = option
 
-    const uid = (vnode.ref as VNodeNormalizedRefAtom).i.uid
+    const uid = (vnode?.ref as VNodeNormalizedRefAtom).i.uid
 
     const { scrollWrapperDom, tableHeaderWrapperDomRect: { top: tableHeaderWrapperDomTop, height: tableHeaderWrapperDomHeight }, top: fixedTop } = tableStickyConfigs[uid]
 
@@ -323,7 +323,7 @@ export const tableSticky: TableSticky = {
 
     const { vnode } = option
 
-    const uid = (vnode.ref as VNodeNormalizedRefAtom).i.uid
+    const uid = (vnode?.ref as VNodeNormalizedRefAtom).i.uid
 
     const { tableBodyWrapperDom, tableHeaderWrapperDom } = tableStickyConfigs[uid]
 
@@ -338,11 +338,10 @@ export const tableSticky: TableSticky = {
    * @param {Option} option 
    */
   watched(option) {
-    const { el } = option
-    const erd = elementResizeDetectorMaker()
-
-    erd.listenTo(el, () => {
-      tableSticky.setTableHeadWrapperDomWidth(option)
-    })
+    const { el, vnode } = option
+    const elementResizeDetector = elementResizeDetectorMaker()
+    const uid = (vnode?.ref as VNodeNormalizedRefAtom).i.uid
+    // @ts-ignore
+    elementResizeDetector.listenTo(el, () => tableStickyConfigs[uid].handleWindowOnResize())
   }
 }

@@ -48,9 +48,11 @@ const install = (app: App, installOption?: InstallOption) => {
 
             const uid = (vnode.ref as VNodeNormalizedRefAtom).i.uid
 
+            const parent = (binding.value && binding.value.parent) ? binding.value.parent : (installOption && installOption.parent) ? installOption.parent : ""
+
             window.removeEventListener('resize', tableStickyConfigs[uid].handleWindowOnResize!)
 
-            const scrollWrapperDom = document.querySelector(binding.value.parent) || document.body
+            const scrollWrapperDom = document.querySelector(parent) || document.body
 
             scrollWrapperDom.removeEventListener('scroll', tableStickyConfigs[uid].handleScrollWrapperDomOnScroll!)
 
@@ -59,8 +61,8 @@ const install = (app: App, installOption?: InstallOption) => {
 }
 
 export { InstallOption }
-
 export { install as vue3TableStickyPlugin }
+
 
 export default {
     install

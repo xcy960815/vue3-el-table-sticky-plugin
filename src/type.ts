@@ -49,8 +49,8 @@ interface TableStickyConfigOption extends Record<string, number | string | Event
         top: number
         height: number
     }
-    handleScrollWrapperDomOnScroll: EventListener | undefined, // 用于存放滚动容器的监听scroll事件的方法
-    handleWindowOnResize: EventListener | undefined, // 用于存放页面resize后重新计算head宽度事件的方法
+    handleScrollWrapperDomOnScroll: EventListener, // 用于存放滚动容器的监听scroll事件的方法
+    handleWindowOnResize: EventListener, // 用于存放页面resize后重新计算head宽度事件的方法
 }
 
 export interface TableStickyConfigs extends Record<string, any> {

@@ -2,6 +2,9 @@
 
 #### 一个让 element-plus el-table 头部吸顶的vue3插件
 
+#### 温馨提示
+ 节点中设置的top值是基于body进行设置的（因为业务场景不一样，所有节点唯一的共同点就是body），所以使用还请注意场景
+
 #### 安装
 ```npm
 npm i vue3-el-table-sticky-plugin -S
@@ -11,6 +14,12 @@ or
 yarn add vue3-el-table-sticky-plugin
 ```
 
+#### 使用前注意
+    1. parent 参数必须存在，如果在初始化插件的时候写入了，指令使用处可以不填
+    2. 指令使用处默认可以不传递参数（parent参数初始化已经写入的情况）
+        1. 如果el-table节点上面的兄弟节点position属性包含 sticky 属性的情况下 table-header的top值就是position属性值为sticky兄弟节点距离body的top值+自身的height值
+        2.  如果el-table节点上面的兄弟节点position属性没有包含 sticky 属性的情况下 就是0 （距离body的值为0的时候就是开始吸顶）
+    3. 写了参数的情况下则尊重用户的设置 table-header的top值 就是用户基于body节点设置的
 
 #### 引入
 ```ts

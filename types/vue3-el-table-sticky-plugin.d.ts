@@ -1,16 +1,15 @@
 import type { App } from 'vue';
 
 declare const _default: {
-    install: (app: App<any>, option?: {
-        parent: string;
-        top: number;
-    }) => void;
+    install: (app: App<any>, installOption?: InstallOption) => void;
 };
 export default _default;
 
-export declare const vue3TableStickyPlugin: (app: App, option?: {
-    parent: string;
-    top: number;
-}) => void;
+export declare type InstallOption = {
+    parent?: string;
+    top?: number;
+};
+
+export declare const vue3TableStickyPlugin: (app: App, installOption?: InstallOption) => void;
 
 export { }

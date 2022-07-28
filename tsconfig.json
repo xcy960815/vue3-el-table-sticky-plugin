@@ -32,6 +32,9 @@
     "src"
   ],
   "files": [
-    "./src/index.ts",
+    "src/index.ts",
+    "src/table-sticky-config.ts",
+    "src/type.ts",
+    "src/utils.ts"
   ]
 }

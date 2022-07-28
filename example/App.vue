@@ -1,14 +1,5 @@
 <template>
     <div class='vue3-el-table-sticky-plugin'>
-        <!-- <div class="vue3-el-table-sticky-plugin-title">
-            <h3>vue3-el-table-sticky-plugin-demo</h3>
-            <el-button class="handle-buttton" @click="handleTableWidthAdd10">
-                控制table宽度 + 10%
-            </el-button>
-            <el-button class="handle-buttton" @click="handleTableWidthReduce10">
-                控制table宽度 - 10%
-            </el-button>
-        </div> -->
         <el-form inline class="demo-form-inline">
             <el-form-item label="Approved by">
                 <el-input placeholder="Approved by" />
@@ -32,10 +23,16 @@
                 <el-button type="primary">Query</el-button>
             </el-form-item>
         </el-form>
+
+        <!-- v-sticky="{ top: vStickyTop }" -->
         <el-table class="el-sticky-table" :data="tableDataState.tableData"
             :header-cell-style="{ background: 'rgb(240, 240, 240)' }" border v-sticky
             :style="{ width: `${tableWidth}%` }">
-            <el-table-column fixed="left" prop="date" label="Date" width="150" />
+            <el-table-column fixed="left" prop="date" label="Date" width="150">
+                <template #default="params">
+                    <span :style="{ color: params.row.date === '第一条数据' ? 'red' : '' }">{{ params.row.date }}</span>
+                </template>
+            </el-table-column>
             <el-table-column fixed="left" prop="name" label="Name" width="250" />
             <el-table-column prop="state" label="State" width="250" />
             <el-table-column prop="city" label="City" width="250" />
@@ -54,6 +51,7 @@
 
 <script lang='ts' setup>
 import { onMounted, reactive, ref } from "vue"
+// import elementResizeDetectorMaker from 'element-resize-detector'
 
 const tableDataState = reactive<{
     tableData: Array<{
@@ -70,25 +68,34 @@ const tableDataState = reactive<{
 })
 const tableWidth = ref<number>(100)
 // 绑定动态数据
-const vStickyTop = ref(0)
+const vStickyTop = ref(100)
 
-// 控制table组件宽度+10%
-const handleTableWidthAdd10 = () => {
-    tableWidth.value += 10
-}
-// 控制table组件宽度+10%
-const handleTableWidthReduce10 = () => {
-    tableWidth.value -= 10
-}
+// // 控制table组件宽度+10%
+// const handleTableWidthAdd10 = () => {
+//     tableWidth.value += 10
+// }
+// // 控制table组件宽度+10%
+// const handleTableWidthReduce10 = () => {
+//     tableWidth.value -= 10
+// }
 
 onMounted(() => {
-
     // 获取自身距离顶部的距离
-    vStickyTop.value = document.querySelector<HTMLElement>(".el-sticky-table")?.getBoundingClientRect().top || 0
-    vStickyTop.value = vStickyTop.value - 10
+    // vStickyTop.value = document.querySelector<HTMLElement>(".el-sticky-table")?.getBoundingClientRect().top || 0
+    // // vStickyTop.value = vStickyTop.value - 10
+    // console.log('用户设置的top值', vStickyTop.value);
+    // setTimeout(() => {
+    //     vStickyTop.value = vStickyTop.value - 10
+    // }, 5000)
 
+    // const elementResizeDetector = elementResizeDetectorMaker()
+
+    // elementResizeDetector.listenTo(document.querySelector<HTMLElement>(".demo-form-inline"), (eleement: HTMLElement) => {
+    //     console.log('eleement.offsetHeight', eleement.offsetHeight);
+
+    // })
     // 模拟数据
-    for (let index = 0; index < 50; index++) {
+    for (let index = 0; index < 49; index++) {
         tableDataState.tableData.push({
             date: '2016-05-03',
             name: 'Tom',
@@ -99,6 +106,15 @@ onMounted(() => {
             tag: 'Home',
         })
     }
+    tableDataState.tableData.unshift({
+        date: '第一条数据',
+        name: 'Tom',
+        state: 'California',
+        city: 'Los Angeles',
+        address: 'No. 189, Grove St, Los Angeles',
+        zip: 'CA 90036',
+        tag: 'Home',
+    })
 
 })
 </script>
@@ -111,11 +127,13 @@ onMounted(() => {
 
     .demo-form-inline {
         padding: 15px;
-        // margin: 15px;
         position: sticky;
+        // position: fixed;
+        // position: relative;
         top: 0;
-        z-index: 99;
-        background-color: #fff;
+        z-index: 10;
+        background-color: red;
+        // background-color: #fff;
     }
 
     .vue3-el-table-sticky-plugin-title {

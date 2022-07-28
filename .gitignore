@@ -2,7 +2,6 @@
 node_modules
 /dist
 /public
-/src
 .browserslistrc
 package-lock.json
 rollup.config.js

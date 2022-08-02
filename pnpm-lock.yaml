@@ -15,7 +15,6 @@ specifiers:
   '@vue/cli-service': ^5.0.8
   autoprefixer: ^10.4.7
   element-plus: ^2.2.9
-  element-resize-detector: ^1.2.4
   less: ^4.1.3
   less-loader: ^11.0.0
   rollup: ^2.33.1
@@ -51,7 +50,6 @@ devDependencies:
   '@vue/cli-service': 5.0.8_y6kh24tahu3kuq4wxdzi566pp4
   autoprefixer: 10.4.7
   element-plus: 2.2.9_vue@3.2.25
-  element-resize-detector: 1.2.4
   less: 4.1.3
   less-loader: 11.0.0_less@4.1.3
   rollup: 2.75.7
@@ -1774,10 +1772,6 @@ packages:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
     dev: true
 
-  /batch-processor/1.0.0:
-    resolution: {integrity: sha512-xoLQD8gmmR32MeuBHgH0Tzd5PuSZx71ZsbhVxOCRbgktZEPe4SQy7s9Z50uPp0F/f7iw2XmkHN2xkgbMfckMDA==}
-    dev: true
-
   /batch/0.6.1:
     resolution: {integrity: sha512-x+VAiMRL6UPkx+kudNvxTl6hB2XNNCG2r+7wixVfIYwu/2HKRXimwQyaumLjMveWvT2Hkd/cAJw+QBMfJ/EKVw==}
     dev: true
@@ -2968,12 +2962,6 @@ packages:
       vue: 3.2.25
     transitivePeerDependencies:
       - '@vue/composition-api'
-    dev: true
-
-  /element-resize-detector/1.2.4:
-    resolution: {integrity: sha512-Fl5Ftk6WwXE0wqCgNoseKWndjzZlDCwuPTcoVZfCP9R3EHQF8qUtr3YUPNETegRBOKqQKPW3n4kiIWngGi8tKg==}
-    dependencies:
-      batch-processor: 1.0.0
     dev: true
 
   /emoji-regex/8.0.0:

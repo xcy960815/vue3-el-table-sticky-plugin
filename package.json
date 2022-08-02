@@ -28,7 +28,6 @@
         "url": "https://github.com/ChongYu-Yease/vue3-el-table-sticky-plugin.git/issues"
     },
     "peerDependencies": {
-        "element-resize-detector": "^1.2.4",
         "vue": "^3.2.13"
     },
     "devDependencies": {
@@ -45,7 +44,6 @@
         "@vue/cli-service": "^5.0.8",
         "autoprefixer": "^10.4.7",
         "element-plus": "^2.2.9",
-        "element-resize-detector": "^1.2.4",
         "less": "^4.1.3",
         "less-loader": "^11.0.0",
         "rollup": "^2.33.1",

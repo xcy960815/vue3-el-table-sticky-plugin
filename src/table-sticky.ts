@@ -1,13 +1,8 @@
 
 import type { Option, TableStickyConfig, TableStickyConfigs, VNodeNormalizedRefAtom } from "./type"
-import elementResizeDetectorMaker from 'element-resize-detector'
 import { debounce, throttle } from "./utils"
-import { nextTick } from "vue"
 
 export class TableSticky {
-
-  elementResizeDetector = elementResizeDetectorMaker({ callOnAdd: false })
-
   tableStickyConfigs: TableStickyConfigs = new Map()
 
   /**
@@ -86,7 +81,7 @@ export class TableSticky {
         // 重新设置表头宽度 100% 
         this.setTableHeadWidth(option)
         // 重新给表头定位
-        this.setTableHeaderFixed(option)
+        this.setTableHeaderFixedDebounce(option)
       });
       resizeObserver.observe(element);
     })
@@ -156,8 +151,6 @@ export class TableSticky {
         },
       })
     }
-
-
   }
 
   /**
@@ -234,6 +227,7 @@ export class TableSticky {
     tableHeaderElement.style.width = width
   }, 100)
 
+  private setTableHeaderFixedDebounce = debounce(this.setTableHeaderFixed, 300)
 
   /**
    * @desc 监听 el-table 节点的宽度变化
@@ -242,12 +236,11 @@ export class TableSticky {
   private handleWatchTableElementToChangeTableHeader(option: Option): void {
     const { tableElement } = option
     const resizeObserver = new ResizeObserver(entries => {
-      console.log('handleWatchTableElementToChangeTableHeader', entries);
       this.handleTableHeaderFixed(option, "remove")
       // 重新设置表头宽度 100% 
       this.setTableHeadWidth(option)
       // 重新给表头定位
-      this.setTableHeaderFixed(option)
+      this.setTableHeaderFixedDebounce(option)
     });
     resizeObserver.observe(tableElement);
   }

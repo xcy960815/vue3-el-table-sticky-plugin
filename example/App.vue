@@ -5,8 +5,16 @@
                 <el-input placeholder="Approved by" />
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" @click="handleAddFormItems(1)">添加一条数据</el-button>
-                <el-button type="primary" @click="handleAddFormItems(2)">添加两条条数据</el-button>
+                <el-button type="primary" @click="handleAddTableData">添加一条数据</el-button>
+                <el-button type="primary" @click="handleAddFormItems(3)">添加三条数据</el-button>
+            </el-form-item>
+        </el-form>
+        <el-form inline class="demo-form-inline-1">
+            <el-form-item :label="formItem.label" v-for="formItem in  elFormItemsState.elFormItems">
+                <el-input placeholder="Approved by" />
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="handleAddTableData">添加一条数据</el-button>
                 <el-button type="primary" @click="handleAddFormItems(3)">添加三条数据</el-button>
             </el-form-item>
         </el-form>
@@ -57,17 +65,7 @@ import { onMounted, reactive, ref } from "vue"
 const elFormItemsState = reactive<{
     elFormItems: Array<{ label: string }>
 }>({
-    elFormItems: [
-        { label: "test-label" },
-        { label: "test-label" },
-        { label: "test-label" },
-        { label: "test-label" },
-        { label: "test-label" },
-        { label: "test-label" },
-        { label: "test-label" },
-        { label: "test-label" },
-        { label: "test-label" }
-    ]
+    elFormItems: []
 })
 const tableDataState = reactive<{
     tableData: Array<{
@@ -103,15 +101,25 @@ tableDataState.tableData.unshift({
     zip: '第一条数据',
     tag: '第一条数据',
 })
+
 const handleAddFormItems = (formItemCount: number) => {
     for (let index = 0; index < formItemCount; index++) {
         elFormItemsState.elFormItems.push({ label: "test-label" })
     }
 }
-// 绑定动态数据
-const vStickyTop = ref(70)
-
+const handleAddTableData = () => {
+    tableDataState.tableData.push({
+        date: '添加的数据',
+        name: '添加的数据',
+        state: '添加的数据',
+        city: '添加的数据',
+        address: '添加的数据',
+        zip: '添加的数据',
+        tag: '添加的数据',
+    })
+}
 onMounted(() => {
+    // setInterval(() => { handleAddFormItems(3) }, 5000)
 
 })
 </script>
@@ -121,16 +129,35 @@ onMounted(() => {
     overflow-y: scroll;
     height: 100%;
     width: 100%;
+
     // margin-top: 100px;
+    .el-form {
+        padding: 10px;
+    }
 
     .demo-form-inline {
-        padding: 15px;
+        // padding: 15px;
         position: sticky;
-        // top: -10px;
         top: 0px;
         z-index: 10;
         background-color: #fcc630;
-        color: #002ea6;
+
+        :deep(.el-form-item__label) {
+            color: #002ea6;
+            font-weight: 600;
+            font-family: "MONACO";
+        }
+
+    }
+
+    .demo-form-inline-1 {
+        background-color: #002ea6;
+
+        :deep(.el-form-item__label) {
+            color: #fcc630;
+            font-weight: 600;
+            font-family: "MONACO";
+        }
     }
 
     .vue3-el-table-sticky-plugin-title {

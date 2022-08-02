@@ -16,13 +16,13 @@ const install = (app: App, installOption?: InstallOption) => {
          * @param {VNode} vnode 
          */
         mounted(tableElement: HTMLElement, binding: DirectiveBinding<{ top: number, parent: string }>, vnode: VNode) {
-            tableSticky.tableMounted({ tableElement, binding, vnode, installOption })
+            tableSticky.mounted({ tableElement, binding, vnode, installOption })
         },
-        updated(tableElement: HTMLElement, binding: DirectiveBinding<{ top: number, parent: string }>, vnode: VNode) {
-            tableSticky.tableUpdated({ tableElement, binding, vnode, installOption })
-        },
+        // updated(tableElement: HTMLElement, binding: DirectiveBinding<{ top: number, parent: string }>, vnode: VNode) {
+        //     tableSticky.updated({ tableElement, binding, vnode, installOption })
+        // },
         unmounted(tableElement: HTMLElement, binding: DirectiveBinding<{ top: number, parent: string }>, vnode: VNode) {
-            tableSticky.tableUnmounted({ tableElement, binding, vnode, installOption })
+            tableSticky.unmounted({ tableElement, binding, vnode, installOption })
         }
     })
 }

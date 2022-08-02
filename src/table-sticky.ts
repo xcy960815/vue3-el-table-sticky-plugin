@@ -3,6 +3,7 @@ import type { Option, TableStickyConfig, TableStickyConfigs, VNodeNormalizedRefA
 import { debounce, throttle } from "./utils"
 
 export class TableSticky {
+
   tableStickyConfigs: TableStickyConfigs = new Map()
 
   /**
@@ -11,7 +12,8 @@ export class TableSticky {
    * @returns boolean
    */
   checkTableHeaderElementFixed(option: Option): boolean {
-    const { tableHeaderElement } = this.getCurrentTableStickyConfig(option)
+    const { tableElement } = option
+    const tableHeaderElement = tableElement.querySelector<HTMLElement>(".el-table__header-wrapper")!
     return tableHeaderElement.classList.contains('fixed')
   }
 
@@ -26,7 +28,7 @@ export class TableSticky {
   }
 
   /**
-   * 获取当前节点前面所有的兄弟节点
+   * @desc 获取当前节点前面所有的兄弟节点
    * @param {HTMLElement} element
    * @param {Array<HTMLElement>} previousSiblings
    * @param {(previousSibling: HTMLElement) => boolean} condition
@@ -35,13 +37,14 @@ export class TableSticky {
     const previousElement = element.previousElementSibling as HTMLElement
     if (previousElement) {
       const previousElementPosition = window.getComputedStyle(previousElement).position
-        ;["sticky"].includes(previousElementPosition) && positionPreviousSiblings.push(previousElement)
+      if (["sticky"].includes(previousElementPosition)) positionPreviousSiblings.push(previousElement)
       this.getPreviousElementSiblings(previousElement, positionPreviousSiblings)
     }
     return positionPreviousSiblings
   }
+
   /**
-   * 获取当前组件在父组件中的uid
+   * @desc 获取当前组件在父组件中的uid
    * @param {Option} option 
    * @returns {Number}
    */
@@ -49,43 +52,38 @@ export class TableSticky {
     const { vnode } = option
     return String((vnode?.ref as VNodeNormalizedRefAtom).i.uid)
   }
+
   /**
-   * @desc
+   * @desc 获取当前uid的所对应的 TableStickyConfig
    * @param {Option} option 
-   * @returns 
+   * @returns {TableStickyConfig | undefined}
    */
   private getCurrentTableStickyConfig(option: Option): TableStickyConfig | undefined {
     const uid = this.getUid(option)
     return this.tableStickyConfigs.get(uid)
   }
+
   /**
    * @desc 获取当前tableHeader节点距离body的top值
    * @param {Option} option 
    * @returns Number
    */
-  private getTableHeaderCurrentTop(option: Option): number {
+  private getTableHeaderCurrentTop(option: Option, type: "init" | "current"): number {
     const { tableElement } = option
-    const positionPreviousSiblings = this.getPreviousElementSiblings(tableElement, [])
-    return positionPreviousSiblings.reduce((minTop: number, element: HTMLElement) => {
-      const elementRect = element.getBoundingClientRect()
-      if (elementRect.top + elementRect.height > minTop) return elementRect.top + elementRect.height
-    }, 0)
-  }
-
-  handleWatchPositionPreviousSiblings(option: Option) {
-    const { tableElement } = option
-    const positionPreviousSiblings = this.getPreviousElementSiblings(tableElement, [])
-    positionPreviousSiblings.forEach(element => {
-      const resizeObserver = new ResizeObserver(entries => {
-        this.handleTableHeaderFixed(option, "remove")
-        // 重新设置表头宽度 100% 
-        this.setTableHeadWidth(option)
-        // 重新给表头定位
-        this.setTableHeaderFixedDebounce(option)
-      });
-      resizeObserver.observe(element);
-    })
-
+    const tableHeaderElement = tableElement.querySelector<HTMLElement>(".el-table__header-wrapper")!
+    if (type === "init") {
+      return tableHeaderElement.getBoundingClientRect().top
+    } else {
+      const positionPreviousSiblings = this.getPreviousElementSiblings(tableElement, [])
+      if (positionPreviousSiblings.length > 0) {
+        return positionPreviousSiblings.reduce((minTop: number, element: HTMLElement) => {
+          const elementRect = element.getBoundingClientRect()
+          if (elementRect.top + elementRect.height > minTop) return elementRect.top + elementRect.height
+        }, 0)
+      } else {
+        return tableHeaderElement.getBoundingClientRect().top
+      }
+    }
   }
 
   /**
@@ -103,7 +101,7 @@ export class TableSticky {
       // 用户在使用处没有加top值 在 初始化的时候加值的时候
       fixedTop = installOption.top
     } else {
-      fixedTop = this.getTableHeaderCurrentTop(option)
+      fixedTop = this.getTableHeaderCurrentTop(option, "current")
     }
     return fixedTop
   }
@@ -128,11 +126,14 @@ export class TableSticky {
     // 获取tableheader节点
     const tableHeaderElement = tableElement.querySelector<HTMLElement>(".el-table__header-wrapper")!
     const tableBodyElement = tableElement.querySelector<HTMLElement>('.el-table__body-wrapper')!
-
     const uid = this.getUid(option)
+
     if (this.tableStickyConfigs.get(uid) === undefined) {
       this.tableStickyConfigs.set(uid, {
+        fixedTop: this.getFixedTop(option),
         tableHeaderElement,
+        // tableheader 初始化的时候距离body的距离 用做 滚动条计算
+        tableHeaderOriginalTop: this.getTableHeaderCurrentTop(option, "init"),
         tableHeaderOriginalStyle: {
           position: window.getComputedStyle(tableHeaderElement).position,
           top: window.getComputedStyle(tableHeaderElement).top,
@@ -144,11 +145,7 @@ export class TableSticky {
           marginTop: window.getComputedStyle(tableBodyElement).marginTop
         },
         scrollElement: this.getScrollElement(option),
-        handleScrollElementOnScroll: () => { this.scrollElementOnScroll(option) },
-        handleWindowOrElementOnResize: () => {
-          this.setTableHeadWidth(option)
-          this.setTableHeaderFixed(option)
-        },
+        handleScrollElementOnScroll: () => { this.scrollElementOnScroll(option) }
       })
     }
   }
@@ -159,18 +156,15 @@ export class TableSticky {
    * @param {Option} option 
    */
   private setTableHeaderFixed(option: Option): void {
-    if (!this.checkTableHeaderElementFixed(option)) {
-      const { tableElement } = option
-      const fixedTop = this.getFixedTop(option)
-      const { tableHeaderElement, tableBodyElement } = this.getCurrentTableStickyConfig(option)
-      const maxZIndex: number = Array.from(tableElement.querySelectorAll("*")).reduce((maxZIndex: number, element: Element) => Math.max(maxZIndex, +window.getComputedStyle(element).zIndex || 0), 0)
-      this.handleTableHeaderFixed(option, "add")
-      tableHeaderElement.style.position = 'fixed'
-      tableHeaderElement.style.zIndex = `${maxZIndex}`
-      tableHeaderElement.style.top = fixedTop + 'px'
-      tableHeaderElement.style.transition = "top .3s"
-      tableBodyElement.style.marginTop = tableHeaderElement.offsetHeight + 'px'
-    }
+    const { tableElement } = option
+    const { tableHeaderElement, tableBodyElement, fixedTop } = this.getCurrentTableStickyConfig(option)
+    const maxZIndex: number = Array.from(tableElement.querySelectorAll("*")).reduce((maxZIndex: number, element: Element) => Math.max(maxZIndex, +window.getComputedStyle(element).zIndex || 0), 0)
+    tableHeaderElement.style.position = 'fixed'
+    tableHeaderElement.style.zIndex = `${maxZIndex}`
+    tableHeaderElement.style.top = fixedTop + 'px'
+    tableHeaderElement.style.transition = "top .3s"
+    tableBodyElement.style.marginTop = tableHeaderElement.offsetHeight + 'px'
+    this.handleTableHeaderFixed(option, "add")
   }
 
   /**
@@ -180,18 +174,16 @@ export class TableSticky {
    */
   private removeTableHeaderFixed(option: Option): void {
     const { tableHeaderElement, tableBodyElement, tableBodyOriginalStyle, tableHeaderOriginalStyle } = this.getCurrentTableStickyConfig(option)
-    if (this.checkTableHeaderElementFixed(option)) {
-      // 设置成原来的样式
-      this.handleTableHeaderFixed(option, 'remove')
-      Object.keys(tableHeaderOriginalStyle).forEach(styleKey => {
-        const styleValue = tableHeaderOriginalStyle[styleKey]
-        tableHeaderElement.style[styleKey] = styleValue
-      })
-      Object.keys(tableBodyOriginalStyle).forEach(styleKey => {
-        const styleValue = tableBodyOriginalStyle[styleKey]
-        tableBodyElement.style[styleKey] = styleValue
-      })
-    }
+    // 设置成原来的样式
+    this.handleTableHeaderFixed(option, 'remove')
+    Object.keys(tableHeaderOriginalStyle).forEach(styleKey => {
+      const styleValue = tableHeaderOriginalStyle[styleKey]
+      tableHeaderElement.style[styleKey] = styleValue
+    })
+    Object.keys(tableBodyOriginalStyle).forEach(styleKey => {
+      const styleValue = tableBodyOriginalStyle[styleKey]
+      tableBodyElement.style[styleKey] = styleValue
+    })
   }
 
   /**
@@ -200,19 +192,15 @@ export class TableSticky {
   * @returns { void }
   */
   private scrollElementOnScroll = throttle((option) => {
-    const { scrollElement } = this.getCurrentTableStickyConfig(option)
-    const fixedTop = this.getFixedTop(option)
-    // 距离body的top值
-    const scrollElementTop = scrollElement.getBoundingClientRect().top
+    const { scrollElement, fixedTop, tableHeaderOriginalTop } = this.getCurrentTableStickyConfig(option)
     // 滚动条距离顶部的距离
-    const scrollElementOffsetTop = scrollElement.scrollTop + scrollElementTop
-    const tableCurrentTop = this.getTableHeaderCurrentTop(option)
-    // 实时获取表头距离body的距离
-    const tableHeaderOffsetTop = tableCurrentTop - fixedTop <= 0 ? 0 : tableCurrentTop - fixedTop
-    if (scrollElementOffsetTop > tableHeaderOffsetTop) {
-      this.setTableHeaderFixed(option)
+    const scrollElementTop = scrollElement.scrollTop + scrollElement.getBoundingClientRect().top
+    const tableHeaderRealTop = tableHeaderOriginalTop - fixedTop <= 0 ? 0 : tableHeaderOriginalTop - fixedTop
+    const isFixed = this.checkTableHeaderElementFixed(option)
+    if (scrollElementTop > tableHeaderRealTop) {
+      !isFixed && this.setTableHeaderFixed(option)
     } else {
-      this.removeTableHeaderFixed(option)
+      isFixed && this.removeTableHeaderFixed(option)
     }
   }, 0)
 
@@ -221,70 +209,91 @@ export class TableSticky {
    * @desc 不能将表头宽度设置成 table 宽度 有时候表头宽度会小于表宽度
    * @param {Option} option 
    */
-  private setTableHeadWidth = debounce((option) => {
+  private setTableHeadWidth(option) {
     const { tableBodyElement, tableHeaderElement } = this.getCurrentTableStickyConfig(option)
     const width = getComputedStyle(tableBodyElement).width
     tableHeaderElement.style.width = width
-  }, 100)
-
+  }
+  /**
+   * @desc setTableHeader 防抖版本
+   */
+  private setTableHeadWidthDebounce = debounce(this.setTableHeadWidth, 300)
+  /**
+   * @desc setTableHeaderFixed 的防抖版本
+   */
   private setTableHeaderFixedDebounce = debounce(this.setTableHeaderFixed, 300)
 
   /**
    * @desc 监听 el-table 节点的宽度变化
    * @param {Option} option 
    */
-  private handleWatchTableElementToChangeTableHeader(option: Option): void {
+  private handleWatchTableElement(option: Option): void {
     const { tableElement } = option
-    const resizeObserver = new ResizeObserver(entries => {
-      this.handleTableHeaderFixed(option, "remove")
+    this.watchElement(tableElement, option)
+  }
+
+  /**
+   * @desc 监听上面的兄弟节点
+   * @param {Option} option 
+   */
+  private handleWatchPreviousSiblings(option: Option) {
+    const { tableElement } = option
+    const positionPreviousSiblings = this.getPreviousElementSiblings(tableElement, [])
+    positionPreviousSiblings.forEach(element => {
+      this.watchElement(element, option)
+    })
+  }
+  /**
+   * @desc 监听可能会影响 el-table-header的节点 
+   * @param {HTMLElement} element 
+   * @param {Option} option 
+   */
+  private watchElement(element: HTMLElement, option: Option): void {
+    const resizeObserver = new ResizeObserver(() => {
+      const isFixed = this.checkTableHeaderElementFixed(option)
+      // 只有 表头 样式已经fixed的情况下 才会重新设置表头样式
       // 重新设置表头宽度 100% 
-      this.setTableHeadWidth(option)
+      isFixed && this.setTableHeadWidthDebounce(option)
       // 重新给表头定位
-      this.setTableHeaderFixedDebounce(option)
+      isFixed && this.setTableHeaderFixedDebounce(option)
     });
-    resizeObserver.observe(tableElement);
+    resizeObserver.observe(element);
   }
 
   /**
    * @desc 当table mounted 的时候
    * @param {Option} option 
    */
-  tableMounted(option: Option): void {
-
+  mounted(option: Option): void {
     // 初始化配置
     this.initTableStickyConfig(option)
-
-    const { handleWindowOrElementOnResize, handleScrollElementOnScroll, scrollElement } = this.getCurrentTableStickyConfig(option)
-
-    window.addEventListener('resize', handleWindowOrElementOnResize)
-
+    const { handleScrollElementOnScroll, scrollElement } = this.getCurrentTableStickyConfig(option)
     scrollElement.addEventListener('scroll', handleScrollElementOnScroll)
-
     // 监听当前el-table节点
-    this.handleWatchTableElementToChangeTableHeader(option)
-
-    this.handleWatchPositionPreviousSiblings(option)
-
+    this.handleWatchTableElement(option)
+    // 监听 当前el-table 前面的兄弟节点
+    this.handleWatchPreviousSiblings(option)
   }
 
   /**
    * @desc 当table updated 的时候
    * @param {Option} option 
    */
-  tableUpdated = debounce((option: Option): void => {
-    // 重新设置表头宽度
-    this.setTableHeadWidth(option)
-    // 更新表头位置
-    this.setTableHeaderFixed(option)
-  }, 100)
+  updated(option: Option): void {
+    const isFixed = this.checkTableHeaderElementFixed(option)
+    // 只有 表头 样式已经fixed的情况下 才会重新设置表头样式
+    // 重新设置表头宽度 100% 
+    isFixed && this.setTableHeadWidthDebounce(option)
+    // 重新给表头定位
+    isFixed && this.setTableHeaderFixedDebounce(option)
+  }
 
   /**
     * @desc 当table unmounted 的时候
     * @param {Option} option 
     */
-  tableUnmounted(option: Option): void {
-    const { handleScrollElementOnScroll, handleWindowOrElementOnResize, scrollElement } = this.getCurrentTableStickyConfig(option)
-    window.removeEventListener('resize', handleWindowOrElementOnResize)
+  unmounted(option: Option): void {
+    const { handleScrollElementOnScroll, scrollElement } = this.getCurrentTableStickyConfig(option)
     scrollElement.removeEventListener('scroll', handleScrollElementOnScroll)
   }
 

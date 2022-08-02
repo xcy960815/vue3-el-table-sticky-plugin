@@ -1,66 +1,23 @@
 import type { ComponentInternalInstance, DirectiveBinding, Ref, VNode } from "vue";
-
 type VNodeRef = string | Ref | ((ref: object | null, refs: Record<string, any>) => void);
-
 export interface Option {
-
-    el: HTMLElement,
-
+    tableElement: HTMLElement,
     binding: StickyDirectiveBinding
-
     vnode?: VNode
-
     installOption?: InstallOption
-
-    eventType?: "componentUpdate" | "resize"
-
 }
-
-export interface TableSticky {
-
-    initTableStickyConfig(option: Option): void
-
-    updateTableStickyConfig(option: Option): void
-
-    setTableHeadWrapperDomWidth(option: Option): void
-
-    setTableHeaderStyleFixed(option: Option): void
-
-    removeTableHeaderStyleFixed(option: Option): void
-
-    handleScrollWrapperDomOnScroll(option: Option): void
-
-    getPositionPreviousElementSiblings(element: HTMLElement, previousSiblings: Array<HTMLElement>, condition: (previousSibling: HTMLElement) => boolean): void
-
-    watched(option: Option): void
+export interface TableStickyConfig extends Record<string, number | { [P in keyof CSSStyleDeclaration]?: CSSStyleDeclaration[P] } | EventListener | HTMLElement> {
+    tableHeaderElement: HTMLElement
+    tableHeaderOriginalStyle: { [P in Exclude<keyof CSSStyleDeclaration, Exclude<keyof CSSStyleDeclaration, "position" | "zIndex" | "top" | "transition">>]: CSSStyleDeclaration[P] },
+    tableBodyElement: HTMLElement
+    tableBodyOriginalStyle: { [P in Exclude<keyof CSSStyleDeclaration, Exclude<keyof CSSStyleDeclaration, "marginTop">>]: CSSStyleDeclaration[P] },
+    scrollElement: HTMLElement
+    handleScrollElementOnScroll: EventListener
+    handleWindowOrElementOnResize: EventListener
 }
-
-interface TableStickyConfigOption extends Record<string, number | string | EventListener | HTMLElement | { top: number, height: number }> {
-    top: number,
-    parent: string,
-    tableHeaderWrapperDom: HTMLElement
-    tableBodyWrapperDom: HTMLElement
-    scrollWrapperDom: HTMLElement
-    scrollWrapperRect: {
-        top: number,
-        height: 0
-    }
-    tableHeaderWrapperDomRect: {
-        top: number
-        height: number
-    }
-    handleScrollWrapperDomOnScroll: EventListener, // 用于存放滚动容器的监听scroll事件的方法
-    handleWindowOnResize: EventListener, // 用于存放页面resize后重新计算head宽度事件的方法
-}
-
-export interface TableStickyConfigs extends Record<string, any> {
-    [key: string]: TableStickyConfigOption
-}
-
+export type TableStickyConfigs = Map<string, TableStickyConfig>
 export type StickyDirectiveBinding = DirectiveBinding<{ parent: string, top: number }>
-
 export type InstallOption = { parent?: string, top?: number }
-
 export type VNodeNormalizedRefAtom = {
     i: ComponentInternalInstance;
     r: VNodeRef;

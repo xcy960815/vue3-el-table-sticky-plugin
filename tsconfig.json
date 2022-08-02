@@ -31,9 +31,10 @@
     "example",
     "src"
   ],
+  "include": [],
   "files": [
     "src/index.ts",
-    "src/table-sticky-config.ts",
+    "src/table-sticky.ts",
     "src/type.ts",
     "src/utils.ts"
   ]

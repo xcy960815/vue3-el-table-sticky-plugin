@@ -9,6 +9,7 @@ specifiers:
   '@rollup/plugin-commonjs': ^16.0.0
   '@rollup/plugin-json': ^4.1.0
   '@rollup/plugin-node-resolve': ^10.0.0
+  '@types/element-resize-detector': ^1.1.3
   '@vitejs/plugin-vue': 2.3.3
   '@vue/cli-plugin-typescript': 5.0.0
   '@vue/cli-service': ^5.0.8
@@ -32,6 +33,9 @@ specifiers:
   typescript: ~4.5.5
   vite: ^2.9.13
   vue: ^3.2.13
+
+dependencies:
+  '@types/element-resize-detector': 1.1.3
 
 devDependencies:
   '@babel/core': 7.18.6
@@ -725,6 +729,10 @@ packages:
     dependencies:
       '@types/node': 18.0.3
     dev: true
+
+  /@types/element-resize-detector/1.1.3:
+    resolution: {integrity: sha512-rqmeHxzNMPar/3IbdQRm+mydv8KlEXUtcp5M47rbZUEjslTjg+bT5+OXCknTCIy1AfvNR0Kio44iMY2zUH65CQ==}
+    dev: false
 
   /@types/eslint-scope/3.7.4:
     resolution: {integrity: sha512-9K4zoImiZc3HlIp6AVUDE4CWYx22a+lhSZMYNpbjW04+YF0KWj4pJXnEMjdnFTiQibFFmElcsasJXDbdI/EPhA==}

@@ -1,7 +1,7 @@
 {
     "name": "vue3-el-table-sticky-plugin",
     "description": "一个让element-plus el-table 头部吸顶的vue3插件",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "private": false,
     "main": "dist/vue3-el-table-sticky-plugin.umd.js",
     "module": "dist/vue3-el-table-sticky-plugin.esm.js",
@@ -28,8 +28,8 @@
         "url": "https://github.com/ChongYu-Yease/vue3-el-table-sticky-plugin.git/issues"
     },
     "peerDependencies": {
-        "vue": "^3.2.13",
-        "element-resize-detector": "^1.2.4"
+        "element-resize-detector": "^1.2.4",
+        "vue": "^3.2.13"
     },
     "devDependencies": {
         "@babel/core": "^7.12.3",
@@ -66,5 +66,8 @@
     },
     "engines": {
         "node": ">=12"
+    },
+    "dependencies": {
+        "@types/element-resize-detector": "^1.1.3"
     }
 }

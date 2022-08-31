@@ -5,7 +5,6 @@ export interface Option {
     binding: StickyDirectiveBinding
     vnode?: VNode
     installOption?: InstallOption
-    eventType?: "watch" | "scroll"
 }
 export interface TableStickyConfig extends Record<string, number | { [P in keyof CSSStyleDeclaration]?: CSSStyleDeclaration[P] } | EventListener | HTMLElement> {
     fixedTop: number
@@ -15,6 +14,7 @@ export interface TableStickyConfig extends Record<string, number | { [P in keyof
     tableBodyElement: HTMLElement
     tableBodyOriginalStyle: { [P in Exclude<keyof CSSStyleDeclaration, Exclude<keyof CSSStyleDeclaration, "marginTop">>]: CSSStyleDeclaration[P] },
     scrollElement: HTMLElement
+    tableWidth: number
     handleScrollElementOnScroll: EventListener
 }
 export type TableStickyConfigs = Map<string, TableStickyConfig>

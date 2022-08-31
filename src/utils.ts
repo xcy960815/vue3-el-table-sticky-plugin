@@ -1,5 +1,4 @@
 import type { Option } from "./type"
-import { TableSticky } from "./table-sticky"
 /**
  * @desc 防抖函数
  * @param {Function} fn 
@@ -7,11 +6,10 @@ import { TableSticky } from "./table-sticky"
  * @param {Boolean} immediate 
  * @returns Function
  */
-export const debounce = (fn: (option: Option) => void, delay: number, immediate?: boolean) => {
+export const debounce = function <T = unknown>(fn: (option: Option) => void, delay: number, immediate?: boolean) {
     let timer: number = 0
-    return function (option: Option) {
-
-        const that = this as TableSticky
+    return function (this: T, option: Option) {
+        const that = this
         if (timer) {
             clearTimeout(timer)
             timer = 0
@@ -27,30 +25,6 @@ export const debounce = (fn: (option: Option) => void, delay: number, immediate?
         } else {
             timer = window.setTimeout(() => {
                 fn.call(that, option)
-            }, delay)
-        }
-    }
-}
-
-export const elementDebounce = (fn: (element: HTMLElement) => void, delay: number, immediate?: boolean) => {
-    let timer: number = 0
-    return function (element: HTMLElement) {
-        const that = this as TableSticky
-        if (timer) {
-            clearTimeout(timer)
-            timer = 0
-        }
-        if (immediate) {
-            let rightNow = !timer
-            timer = window.setTimeout(() => {
-                timer = 0
-            }, delay)
-            if (rightNow) {
-                fn.call(that, element)
-            }
-        } else {
-            timer = window.setTimeout(() => {
-                fn.call(that, element)
             }, delay)
         }
     }
@@ -62,11 +36,11 @@ export const elementDebounce = (fn: (element: HTMLElement) => void, delay: numbe
  * @param {Number} delay 
  * @returns 
  */
-export const throttle = (fn: (option: Option) => void, delay: number,) => {
+export const throttle = function <T = unknown>(fn: (option: Option) => void, delay: number): (this: T, option: Option) => void {
     // 使用闭包返回一个函数并且用到闭包函数外面的变量previous
     let previous = 0;
-    return function (option: Option) {
-        const that = this as TableSticky
+    return function (this: T, option: Option) {
+        const that = this
         const now = new Date().getTime();
         if (now - previous > delay) {
             fn.call(that, option);

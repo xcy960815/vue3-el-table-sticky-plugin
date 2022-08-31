@@ -15,11 +15,12 @@ yarn add vue3-el-table-sticky-plugin
 ```
 
 #### 使用前注意
-    1. parent 参数必须存在，如果在初始化插件的时候写入了，指令使用处可以不填
-    2. 指令使用处默认可以不传递参数（parent参数初始化已经写入的情况）
-        1. 如果el-table节点上面的兄弟节点position属性包含 sticky 属性的情况下 table-header的top值就是position属性值为sticky兄弟节点距离body的top值+自身的height值
-        2.  如果el-table节点上面的兄弟节点position属性没有包含 sticky 属性的情况下 就是0 （距离body的值为0的时候就是开始吸顶）
-    3. 写了参数的情况下则尊重用户的设置 table-header的top值 就是用户基于body节点设置的
+    1. parent 滚动容器，默认为body，如果在初始化插件的时候写入了，指令使用处可以不填(参数优先级 指令使用处 > 指令注册处 > 系统兜底(body节点))
+    
+    2. top 可选参数 (参数优先级 指令使用处 > 指令注册处 > 系统兜底(基于当前table-header距离body的top值))
+        * 如果table节点上面的兄弟节点高度不会发生变化，不会影响table-header高度的时候，可以直接写指令 v-sticky
+        * 如果table节点上面的兄弟节点高度会发生变化，请将变化之后的高度告诉vue3-el-table-sticky-plugin指令，它会自己动态调整吸顶高度 v-sticky="{top:stickyValue}"
+    3. 实际使用情况还会更复杂 本插件只是在理想状态下面做的封装 如有不足还请指出
 
 #### 引入
 ```ts
@@ -49,7 +50,7 @@ app.mount("#app");
         <!-- 2. 距离顶部多少距离的时候 就开始吸顶 -->
         <!-- parent 当前页面滚动的节点 如果是document.body 可以不用传递 -->
         <el-table 
-            v-sticky="{ top: vStickyTop, parent: '.vue3-el-table-sticky-plugin' }" 
+            v-sticky="{ top: stickyValue, parent: '.vue3-el-table-sticky-plugin' }" 
             class="el-sticky-table" 
             :data="tableDataState.tableData"
             :header-cell-style="{ background: 'rgb(240, 240, 240)' }" 
@@ -82,11 +83,19 @@ const tableDataState = reactive({
 })
 
 // 绑定动态数据
-const vStickyTop = ref(0)
+const stickyValue = ref<number>(0)
 
 onMounted(() => {
     // 动态 获取自身距离顶部的距离 意思就是头部就定在当前位置
-    vStickyTop.value = document.querySelector<HTMLElement>(".el-sticky-table")?.getBoundingClientRect().top || 0
+    // 监听节点class 为 demo-form-inline 的高度变化
+    const demoFormInline = document.querySelector(".demo-form-inline")!;
+    const resizeObserver = new ResizeObserver((entries) => {
+        for (let entry of entries) {
+            const tableElement = entry.target as HTMLDivElement
+            stickyValue.value = tableElement.getBoundingClientRect().height
+        }
+    });
+    resizeObserver.observe(demoFormInline);
 
 })
 </script>
@@ -102,8 +111,6 @@ onMounted(() => {
 </style>
 ```
 
-
-#### 实际使用情况还会更复杂 本插件只是在理想状态下面做的封装 如有不足还请指出
 
 
 

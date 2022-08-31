@@ -18,9 +18,9 @@ const install = (app: App, installOption?: InstallOption) => {
         mounted(tableElement: HTMLElement, binding: DirectiveBinding<{ top: number, parent: string }>, vnode: VNode) {
             tableSticky.mounted({ tableElement, binding, vnode, installOption })
         },
-        // updated(tableElement: HTMLElement, binding: DirectiveBinding<{ top: number, parent: string }>, vnode: VNode) {
-        //     tableSticky.updated({ tableElement, binding, vnode, installOption })
-        // },
+        updated(tableElement: HTMLElement, binding: DirectiveBinding<{ top: number, parent: string }>, vnode: VNode) {
+            tableSticky.updated({ tableElement, binding, vnode, installOption })
+        },
         unmounted(tableElement: HTMLElement, binding: DirectiveBinding<{ top: number, parent: string }>, vnode: VNode) {
             tableSticky.unmounted({ tableElement, binding, vnode, installOption })
         }

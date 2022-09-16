@@ -15,15 +15,15 @@ export class TableSticky {
     const tableHeaderElement = this.getTableHeaderElement(option)
     return tableHeaderElement.classList.contains('fixed')
   }
-  /**
-   * @desc 校验页面是否滚动
-   * @param {Option} option 
-   * @returns {Boolean}
-   */
-  private checkScrollElementIsScroll(option: Option): boolean {
-    const { scrollElement } = this.getCurrentTableStickyConfig(option)
-    return scrollElement.scrollTop > 0
-  }
+  // /**
+  //  * @desc 校验页面是否滚动
+  //  * @param {Option} option 
+  //  * @returns {Boolean}
+  //  */
+  // private checkScrollElementIsScroll(option: Option): boolean {
+  //   const { scrollElement } = this.getCurrentTableStickyConfig(option)
+  //   return scrollElement.scrollTop > 0
+  // }
 
   /**
    * @desc 处理 tableheader fixed 标志
@@ -228,10 +228,9 @@ export class TableSticky {
     this.tableStickyConfigs.set(uid, {
       ...currentTableStickyConfig,
       tableWidth: option.tableElement.getBoundingClientRect().width,
-      fixedTop: option.binding.value ? option.binding.value.top : this.getTableHeaderCurrentTop(option),
+      fixedTop: option.binding.value && option.binding.value.top ? option.binding.value.top : this.getTableHeaderCurrentTop(option),
       tableHeaderOriginalTop: this.getTableHeaderCurrentTop(option)
     })
-
   }
   /**
    * @desc setTableHeader 防抖版本
@@ -262,11 +261,12 @@ export class TableSticky {
     const resizeObserver = new ResizeObserver((entries) => {
       // 获取现在tableWidth
       let currentTableWidth: number
-      for (let entry of entries) {
+      for (const entry of entries) {
         const tableElement = entry.target as HTMLDivElement
         currentTableWidth = tableElement.getBoundingClientRect().width
       }
       const { tableWidth } = this.getCurrentTableStickyConfig(option)
+
       // 如果tableWidth发生变化 则重新设置表头宽度
       if (tableWidth !== currentTableWidth) {
         this.setTableHeadWidthDebounce(option)

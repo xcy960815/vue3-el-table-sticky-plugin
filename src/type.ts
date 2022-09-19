@@ -14,7 +14,7 @@ export interface TableStickyConfig extends Record<string, number | { [P in keyof
     tableBodyElement: HTMLElement
     tableBodyOriginalStyle: { [P in Exclude<keyof CSSStyleDeclaration, Exclude<keyof CSSStyleDeclaration, "marginTop">>]: CSSStyleDeclaration[P] },
     scrollElement: HTMLElement
-    tableWidth: number
+    tableWidth: string
     handleScrollElementOnScroll: EventListener
 }
 export type TableStickyConfigs = Map<string, TableStickyConfig>

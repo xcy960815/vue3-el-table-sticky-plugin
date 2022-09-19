@@ -5,8 +5,7 @@
         <el-input placeholder="Approved by" />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="handleAddTableData">添加一条数据</el-button>
-        <el-button type="primary" @click="handleAddFormItems(3)">添加三条数据</el-button>
+        <el-button type="primary" @click="handleAddFormItems(1)">添加一条数据</el-button>
       </el-form-item>
     </el-form>
    
@@ -55,7 +54,7 @@ const tableDataState = reactive<{
   tableData: []
 });
 // 模拟数据
-for (let index = 0; index < 19; index++) {
+for (let index = 0; index < 49; index++) {
   tableDataState.tableData.push({
     date: "2016-05-03",
     name: "Tom",
@@ -94,15 +93,15 @@ const handleAddTableData = () => {
 };
 onMounted(() => {
   // 监听节点class 为 demo-form-inline 的高度变化
-  const demoFormInline = document.querySelector(".demo-form-inline")!;
-  const resizeObserver = new ResizeObserver((entries) => {
-    for (let entry of entries) {
-        const tableElement = entry.target as HTMLDivElement
-        stickyValue.value = tableElement.getBoundingClientRect().height
-      }
-  });
-  resizeObserver.observe(demoFormInline);
-  handleAddFormItems(3);
+  // const demoFormInline = document.querySelector(".demo-form-inline")!;
+  // const resizeObserver = new ResizeObserver((entries) => {
+  //   for (const entry of entries) {
+  //       const tableElement = entry.target as HTMLDivElement
+  //       stickyValue.value = tableElement.getBoundingClientRect().height
+  //     }
+  // });
+  // resizeObserver.observe(demoFormInline);
+  // handleAddFormItems(3);
 });
 </script>
 <style lang='less' scoped>
@@ -118,8 +117,8 @@ onMounted(() => {
 
   .demo-form-inline {
     width: 500px;
-    position: sticky;
-    top: 0px;
+    // position: sticky;
+    // top: 0px;
     z-index: 10;
     background-color: #fcc630;
 

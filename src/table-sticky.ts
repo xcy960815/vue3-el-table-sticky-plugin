@@ -96,6 +96,13 @@ export class TableSticky {
   }
 
   /**
+   * @desc 获取dom节点的样式
+   */
+  private getElementStyle<P extends keyof CSSStyleDeclaration>(element: HTMLElement, styleKey: P): CSSStyleDeclaration[P] {
+    return window.getComputedStyle(element)[styleKey]
+  }
+
+  /**
    * @desc 获取tableHeader节点距离body的top值
    * @desc 只有在初始化的时候 才会采用 用户传递进来的值
    * @param {Option} option 
@@ -106,9 +113,18 @@ export class TableSticky {
     if (binding.value && typeof binding.value.top === "number") return binding.value.top
     else if (installOption && typeof installOption.top === "number") return installOption.top
     else {
-      const tableHeaderElement = this.getTableHeaderElement(option)
-      return tableHeaderElement.getBoundingClientRect().top
+      return this.getTableHeaderCurrentTop(option)
     }
+  }
+
+  /**
+   * @desc 获取表头原来的top值
+   * @param {Option} option
+   * @return number
+   */
+  private getTableHeaderOriginalTop(option: Option): number {
+    const currentTableStickyConfig = this.getCurrentTableStickyConfig(option) || undefined
+    return currentTableStickyConfig && currentTableStickyConfig.tableHeaderOriginalTop ? currentTableStickyConfig.tableHeaderOriginalTop : this.getTableHeaderCurrentTop(option)
   }
   /**
    * @desc 初始化 tableStickyConfigs 数据
@@ -130,23 +146,22 @@ export class TableSticky {
         fixedTop: this.getStickyTopValue(option),
         tableHeaderElement,
         // tableheader 初始化的时候距离body的距离 用做 滚动条计算
-        tableHeaderOriginalTop: this.getTableHeaderCurrentTop(option),
+        // this.getTableHeaderCurrentTop(option),
+        tableHeaderOriginalTop: this.getTableHeaderOriginalTop(option),
         tableHeaderOriginalStyle: {
-          position: window.getComputedStyle(tableHeaderElement).position,
-          top: window.getComputedStyle(tableHeaderElement).top,
-          transition: window.getComputedStyle(tableHeaderElement).transition,
-          zIndex: window.getComputedStyle(tableHeaderElement).zIndex
+          position: this.getElementStyle(tableHeaderElement, 'position'),
+          top: this.getElementStyle(tableHeaderElement, 'top'),
+          transition: this.getElementStyle(tableHeaderElement, 'transition'),
+          zIndex: this.getElementStyle(tableHeaderElement, 'zIndex')
         },
         tableBodyElement,
         tableBodyOriginalStyle: {
-          marginTop: window.getComputedStyle(tableBodyElement).marginTop
+          marginTop: this.getElementStyle(tableBodyElement, 'marginTop')
         },
-        tableWidth: option.tableElement.getBoundingClientRect().width,
+        tableWidth: this.getElementStyle(option.tableElement, 'width'),
         scrollElement,
         handleScrollElementOnScroll: () => { this.scrollElementOnScroll(option) }
       })
-
-
     }
   }
 
@@ -157,7 +172,7 @@ export class TableSticky {
   private setTableHeaderFixed(option: Option): void {
     const { tableElement } = option
     const { tableHeaderElement, tableBodyElement, fixedTop } = this.getCurrentTableStickyConfig(option)
-    const maxZIndex: number = Array.from(tableElement.querySelectorAll("*")).reduce((maxZIndex: number, element: Element) => Math.max(maxZIndex, +window.getComputedStyle(element).zIndex || 0), 0)
+    const maxZIndex: number = Array.from(tableElement.querySelectorAll("*")).reduce((maxZIndex: number, element: Element) => Math.max(maxZIndex, +this.getElementStyle(element as HTMLElement, "zIndex") || 0), 0)
     tableHeaderElement.style.position = 'fixed'
     tableHeaderElement.style.zIndex = `${maxZIndex}`
     tableHeaderElement.style.top = fixedTop + 'px'
@@ -213,7 +228,7 @@ export class TableSticky {
     // 从当前配置中获取 tableBodyElement节点和 tableHeaderElement 节点
     const { tableBodyElement, tableHeaderElement } = this.getCurrentTableStickyConfig(option)
     // 获取表body宽度
-    const width = getComputedStyle(tableBodyElement).width
+    const width = this.getElementStyle(tableBodyElement, 'width')
     // 给表头赋值宽度
     tableHeaderElement.style.width = width
   }
@@ -227,9 +242,9 @@ export class TableSticky {
     const currentTableStickyConfig = this.getCurrentTableStickyConfig(option)
     this.tableStickyConfigs.set(uid, {
       ...currentTableStickyConfig,
-      tableWidth: option.tableElement.getBoundingClientRect().width,
-      fixedTop: option.binding.value && option.binding.value.top ? option.binding.value.top : this.getTableHeaderCurrentTop(option),
-      tableHeaderOriginalTop: this.getTableHeaderCurrentTop(option)
+      tableWidth: this.getElementStyle(option.tableElement, 'width'),
+      fixedTop: this.getStickyTopValue(option),
+      tableHeaderOriginalTop: this.getTableHeaderOriginalTop(option)
     })
   }
   /**
@@ -260,10 +275,10 @@ export class TableSticky {
   private watchElement(element: HTMLElement, option: Option): void {
     const resizeObserver = new ResizeObserver((entries) => {
       // 获取现在tableWidth
-      let currentTableWidth: number
+      let currentTableWidth: string
       for (const entry of entries) {
         const tableElement = entry.target as HTMLDivElement
-        currentTableWidth = tableElement.getBoundingClientRect().width
+        currentTableWidth = this.getElementStyle(tableElement, 'width')
       }
       const { tableWidth } = this.getCurrentTableStickyConfig(option)
 

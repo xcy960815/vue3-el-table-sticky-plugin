@@ -6,7 +6,7 @@ export interface Option {
     vnode?: VNode
     installOption?: InstallOption
 }
-export interface TableStickyConfig extends Record<string, number | { [P in keyof CSSStyleDeclaration]?: CSSStyleDeclaration[P] } | EventListener | HTMLElement> {
+export interface TableStickyConfig extends Record<string, number | { [P in keyof CSSStyleDeclaration]?: CSSStyleDeclaration[P] } | EventListener | HTMLElement | ResizeObserver> {
     fixedTop: number
     tableHeaderElement: HTMLElement
     tableHeaderOriginalTop: number
@@ -16,6 +16,7 @@ export interface TableStickyConfig extends Record<string, number | { [P in keyof
     scrollElement: HTMLElement
     tableWidth: string
     handleScrollElementOnScroll: EventListener
+    resizeObserver: ResizeObserver
 }
 export type TableStickyConfigs = Map<string, TableStickyConfig>
 export type StickyDirectiveBinding = DirectiveBinding<{ parent: string, top: number }>

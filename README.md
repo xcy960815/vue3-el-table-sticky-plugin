@@ -1,25 +1,31 @@
 ### vue3-el-table-sticky-plugin 
+<br/>
 
-#### 一个让 element-plus el-table 头部吸顶的vue3插件
+[![npm](https://img.shields.io/npm/v/vue3-el-table-sticky-plugin.svg)](https://www.npmjs.com/package/vue3-el-table-sticky-plugin)
+[![npm](https://img.shields.io/npm/dm/vue3-el-table-sticky-plugin.svg)](https://www.npmjs.com/package/vue3-el-table-sticky-plugin)
+[![npm](https://img.shields.io/npm/l/vue3-el-table-sticky-plugin.svg)](https://www.npmjs.com/package/vue3-el-table-sticky-plugin)
+[![vue3](https://img.shields.io/badge/vue-3.x-brightgreen.svg)](https://vuejs.org/)
+[![element-plus](https://img.shields.io/badge/element--plus-2.x-brightgreen.svg)](https://element-plus.org/)
+[![vue3](https://img.shields.io/badge/vue--cli-4.x-brightgreen.svg)](https://cli.vuejs.org/)
 
-#### 温馨提示
- 节点中设置的top值是基于body进行设置的（因为业务场景不一样，所有节点唯一的共同点就是body），所以使用还请注意场景
+<br/>
+> 一个让 element-plus el-table 表头部吸顶的vue3插件
+
+<br/>
+
+#### 实现思路
+ 节点中设置的top值是基于body进行设置的因为业务场景不一样，所有节点唯一的共同点就是body。
 
 #### 安装
 ```npm
 npm i vue3-el-table-sticky-plugin -S
 ```
-or
-```npm
-yarn add vue3-el-table-sticky-plugin
-```
 
 #### 使用前注意
-    1. parent 滚动容器，默认为body，如果在初始化插件的时候写入了，指令使用处可以不填(参数优先级 指令使用处 > 指令注册处 > 系统兜底(body节点))
+    1. parent 滚动容器，默认为body。(参数优先级 指令使用处 > 指令注册处 > 插件兜底(body节点))
     
-    2. top 可选参数 (参数优先级 指令使用处 > 指令注册处 > 系统兜底(基于当前table-header距离body的top值))
-        * 如果table节点上面的兄弟节点高度不会发生变化，不会影响table-header高度的时候，可以直接写指令 v-sticky
-        * 如果table节点上面的兄弟节点高度会发生变化，请将变化之后的高度告诉vue3-el-table-sticky-plugin指令，它会自己动态调整吸顶高度 v-sticky="{top:stickyValue}"
+    2. top 可选参数 (参数优先级 指令使用处 > 指令注册处 > 插件兜底(基于当前table-header距离body的top值))
+        
     3. 实际使用情况还会更复杂 本插件只是在理想状态下面做的封装 如有不足还请指出
 
 #### 引入
@@ -28,27 +34,16 @@ yarn add vue3-el-table-sticky-plugin
 import { createApp } from "vue";
 import App from "./App.vue";
 import Vue3TableStickyPlugin from "vue3-el-table-sticky-plugin"
-import ElementPlus from 'element-plus'
-import 'element-plus/dist/index.css'
 const app = createApp(App)
-app.use(ElementPlus)
-
-// 指令植入 start
+// 注入全局指令
 app.use(Vue3TableStickyPlugin)
-// 指令植入 end
 app.mount("#app");
-
 ```
 #### 使用
 ```html
 <!-- xxx.vue -->
 <template>
     <div class='vue3-el-table-sticky-plugin'>
-
-        <!-- 注意：这里的 top 有两层意思 -->
-        <!-- 1. 吸顶的时候 距离顶部多少距离 -->
-        <!-- 2. 距离顶部多少距离的时候 就开始吸顶 -->
-        <!-- parent 当前页面滚动的节点 如果是document.body 可以不用传递 -->
         <el-table 
             v-sticky="{ top: stickyValue, parent: '.vue3-el-table-sticky-plugin' }" 
             class="el-sticky-table" 
@@ -90,7 +85,7 @@ onMounted(() => {
     // 监听节点class 为 demo-form-inline 的高度变化
     const demoFormInline = document.querySelector(".demo-form-inline")!;
     const resizeObserver = new ResizeObserver((entries) => {
-        for (let entry of entries) {
+        for (const entry of entries) {
             const tableElement = entry.target as HTMLDivElement
             stickyValue.value = tableElement.getBoundingClientRect().height
         }
@@ -102,7 +97,7 @@ onMounted(() => {
 <style lang='less' scoped>
 .vue3-el-table-sticky-plugin {
     position: relative;
-    /* 注意我给 class 为 vue3-el-table-sticky-plugin 的节点设置了滚动属性 
+    /* 注意 class 为 vue3-el-table-sticky-plugin 的节点设置了滚动属性 
         parent参数的值就是 ".vue3-el-table-sticky-plugin" */
     overflow-y: scroll;
     height: 100%;
@@ -110,6 +105,12 @@ onMounted(() => {
 }
 </style>
 ```
+### OPTIONS
+| 参数 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| top | 吸顶的时候 距离顶部多少距离，可以不用传递 | number | 不传递的话就是el-table-header节点距离body的距离 |
+| parent | 当前页面滚动的节点，如果是document.body 可以不用传递 | string | body |
+---------------------
 
 
 

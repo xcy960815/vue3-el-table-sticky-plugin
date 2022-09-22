@@ -15,16 +15,6 @@ export class TableSticky {
     const tableHeaderElement = this.getTableHeaderElement(option)
     return tableHeaderElement.classList.contains('fixed')
   }
-  // /**
-  //  * @desc 校验页面是否滚动
-  //  * @param {Option} option 
-  //  * @returns {Boolean}
-  //  */
-  // private checkScrollElementIsScroll(option: Option): boolean {
-  //   const { scrollElement } = this.getCurrentTableStickyConfig(option)
-  //   return scrollElement.scrollTop > 0
-  // }
-
   /**
    * @desc 处理 tableheader fixed 标志
    * @param {Option} option 
@@ -160,7 +150,8 @@ export class TableSticky {
         },
         tableWidth: this.getElementStyle(option.tableElement, 'width'),
         scrollElement,
-        handleScrollElementOnScroll: () => { this.scrollElementOnScroll(option) }
+        handleScrollElementOnScroll: () => { this.scrollElementOnScroll(option) },
+        resizeObserver: this.handleWatchTableElement(option)
       })
     }
   }
@@ -263,16 +254,8 @@ export class TableSticky {
    * @desc 监听 el-table 节点的宽度变化
    * @param {Option} option 
    */
-  private handleWatchTableElement(option: Option): void {
+  private handleWatchTableElement(option: Option): ResizeObserver {
     const { tableElement } = option
-    this.watchElement(tableElement, option)
-  }
-  /**
-   * @desc 监听可能会影响 el-table-header的节点 
-   * @param {HTMLElement} element 
-   * @param {Option} option 
-   */
-  private watchElement(element: HTMLElement, option: Option): void {
     const resizeObserver = new ResizeObserver((entries) => {
       // 获取现在tableWidth
       let currentTableWidth: string
@@ -289,8 +272,10 @@ export class TableSticky {
         this.updateTableStickyConfigDebounce(option)
       }
     });
-    resizeObserver.observe(element);
+    resizeObserver.observe(tableElement);
+    return resizeObserver
   }
+
   /**
    * @desc 当table mounted 的时候
    * @param {Option} option 
@@ -301,10 +286,6 @@ export class TableSticky {
     // 获取当前的配置，监听parent节点滚动事件
     const { handleScrollElementOnScroll, scrollElement } = this.getCurrentTableStickyConfig(option)
     scrollElement.addEventListener('scroll', handleScrollElementOnScroll)
-    window.onload = () => {
-      // 监听el-table自身节点的变化
-      this.handleWatchTableElement(option)
-    }
   }
   /**
    * @desc 当table updated 的时候
@@ -322,8 +303,8 @@ export class TableSticky {
     * @param {Option} option 
     */
   unmounted(option: Option): void {
-    const { handleScrollElementOnScroll, scrollElement } = this.getCurrentTableStickyConfig(option)
+    const { handleScrollElementOnScroll, scrollElement, resizeObserver } = this.getCurrentTableStickyConfig(option)
     scrollElement.removeEventListener('scroll', handleScrollElementOnScroll)
+    resizeObserver.disconnect()
   }
-
 }

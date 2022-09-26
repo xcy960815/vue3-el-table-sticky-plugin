@@ -136,7 +136,6 @@ export class TableSticky {
         fixedTop: this.getFixedTop(option),
         tableHeaderElement,
         // tableheader 初始化的时候距离body的距离 用做 滚动条计算
-        // this.getTableHeaderCurrentTop(option),
         tableHeaderOriginalTop: this.getTableHeaderOriginalTop(option),
         tableHeaderOriginalStyle: {
           position: this.getElementStyle(tableHeaderElement, 'position'),

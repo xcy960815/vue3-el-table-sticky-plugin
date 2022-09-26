@@ -98,7 +98,7 @@ export class TableSticky {
    * @param {Option} option 
    * @returns 
    */
-  private getStickyTopValue(option: Option): number {
+  private getFixedTop(option: Option): number {
     const { binding, installOption } = option
     if (binding.value && typeof binding.value.top === "number") return binding.value.top
     else if (installOption && typeof installOption.top === "number") return installOption.top
@@ -133,7 +133,7 @@ export class TableSticky {
     scrollElement.style.overflowAnchor = "none"
     if (this.tableStickyConfigs.get(uid) === undefined) {
       this.tableStickyConfigs.set(uid, {
-        fixedTop: this.getStickyTopValue(option),
+        fixedTop: this.getFixedTop(option),
         tableHeaderElement,
         // tableheader 初始化的时候距离body的距离 用做 滚动条计算
         // this.getTableHeaderCurrentTop(option),
@@ -234,7 +234,7 @@ export class TableSticky {
     this.tableStickyConfigs.set(uid, {
       ...currentTableStickyConfig,
       tableWidth: this.getElementStyle(option.tableElement, 'width'),
-      fixedTop: this.getStickyTopValue(option),
+      fixedTop: this.getFixedTop(option),
       tableHeaderOriginalTop: this.getTableHeaderOriginalTop(option)
     })
   }

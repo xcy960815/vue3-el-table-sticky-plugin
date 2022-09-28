@@ -20,7 +20,7 @@ export class TableSticky {
    * @param {Option} option 
    * @param {"add" | "remove"} handleType 
    */
-  private handleTableHeaderFixed(option: Option, handleType: "add" | "remove"): void {
+  private handleTableHeaderElementFixed(option: Option, handleType: "add" | "remove"): void {
     const { tableHeaderElement } = this.getCurrentTableStickyConfig(option)
     tableHeaderElement.classList[handleType]('fixed')
   }
@@ -54,6 +54,10 @@ export class TableSticky {
     return tableElement.querySelector<HTMLElement>(".el-table__body-wrapper")!
   }
 
+  private getElTableTnnerWrapper(option: Option): HTMLElement {
+    const { tableElement } = option
+    return tableElement.querySelector<HTMLElement>(".el-table__inner-wrapper")!
+  }
   /**
    * @desc 获取当前组件在父组件中的uid
    * @param {Option} option 
@@ -106,16 +110,6 @@ export class TableSticky {
       return this.getTableHeaderCurrentTop(option)
     }
   }
-
-  /**
-   * @desc 获取表头原来的top值
-   * @param {Option} option
-   * @return number
-   */
-  private getTableHeaderOriginalTop(option: Option): number {
-    const currentTableStickyConfig = this.getCurrentTableStickyConfig(option) || undefined
-    return currentTableStickyConfig && currentTableStickyConfig.tableHeaderOriginalTop ? currentTableStickyConfig.tableHeaderOriginalTop : this.getTableHeaderCurrentTop(option)
-  }
   /**
    * @desc 初始化 tableStickyConfigs 数据
    * @param {Option} option 
@@ -123,35 +117,37 @@ export class TableSticky {
   private initTableStickyConfig(option: Option): void {
     // 获取tableheader节点
     const tableHeaderElement = this.getTableHeaderElement(option)
-    const tableBodyElement = this.getTableBodyElement(option)
-    const uid = this.getUid(option)
+    const tableInnerWapperElement = this.getElTableTnnerWrapper(option)
     const scrollElement = this.getScrollElement(option)
     /**
      * @desc 关闭滚动锚定 值有两个 auto 是开启 none 是关闭
      * @link https://www.cnblogs.com/ziyunfei/p/6668101.html
      */
     scrollElement.style.overflowAnchor = "none"
-    if (this.tableStickyConfigs.get(uid) === undefined) {
-      this.tableStickyConfigs.set(uid, {
+    const currentTableStickyConfig = this.getCurrentTableStickyConfig(option)
+    if (currentTableStickyConfig === undefined) {
+      const initTableStickyConfig: TableStickyConfig = {
         fixedTop: this.getFixedTop(option),
         tableHeaderElement,
-        // tableheader 初始化的时候距离body的距离 用做 滚动条计算
-        tableHeaderOriginalTop: this.getTableHeaderOriginalTop(option),
-        tableHeaderOriginalStyle: {
+
+        tableHeaderElementOriginalTop: this.getTableHeaderCurrentTop(option),
+        tableHeaderElementOriginalStyle: {
           position: this.getElementStyle(tableHeaderElement, 'position'),
           top: this.getElementStyle(tableHeaderElement, 'top'),
           transition: this.getElementStyle(tableHeaderElement, 'transition'),
           zIndex: this.getElementStyle(tableHeaderElement, 'zIndex')
         },
-        tableBodyElement,
-        tableBodyOriginalStyle: {
-          marginTop: this.getElementStyle(tableBodyElement, 'marginTop')
+        tableBodyElement: this.getTableBodyElement(option),
+        tableInnerWapperElement,
+        tableInnerWapperElementOriginalStyle: {
+          marginTop: this.getElementStyle(tableInnerWapperElement, 'marginTop')
         },
         tableWidth: this.getElementStyle(option.tableElement, 'width'),
         scrollElement,
         handleScrollElementOnScroll: () => { this.scrollElementOnScroll(option) },
         resizeObserver: this.handleWatchTableElement(option)
-      })
+      }
+      this.updateTableStickyConfig(option, initTableStickyConfig)
     }
   }
 
@@ -161,15 +157,15 @@ export class TableSticky {
    */
   private setTableHeaderFixed(option: Option): void {
     const { tableElement } = option
-    const { tableHeaderElement, tableBodyElement, fixedTop } = this.getCurrentTableStickyConfig(option)
+    const { tableHeaderElement, tableInnerWapperElement, fixedTop } = this.getCurrentTableStickyConfig(option)
     const maxZIndex: number = Array.from(tableElement.querySelectorAll("*")).reduce((maxZIndex: number, element: Element) => Math.max(maxZIndex, +this.getElementStyle(element as HTMLElement, "zIndex") || 0), 0)
     tableHeaderElement.style.position = 'fixed'
     tableHeaderElement.style.zIndex = `${maxZIndex}`
     tableHeaderElement.style.top = fixedTop + 'px'
     tableHeaderElement.style.transition = "top .3s"
-    tableBodyElement.style.marginTop = tableHeaderElement.offsetHeight + 'px'
+    tableInnerWapperElement.style.marginTop = tableHeaderElement.offsetHeight + 'px'
     // 增加 fixed 标记
-    this.handleTableHeaderFixed(option, "add")
+    this.handleTableHeaderElementFixed(option, "add")
   }
 
   /**
@@ -178,17 +174,18 @@ export class TableSticky {
    * @returns { void }
    */
   private removeTableHeaderFixed(option: Option): void {
-    const { tableHeaderElement, tableBodyElement, tableBodyOriginalStyle, tableHeaderOriginalStyle } = this.getCurrentTableStickyConfig(option)
-    Object.keys(tableHeaderOriginalStyle).forEach(styleKey => {
-      const styleValue = tableHeaderOriginalStyle[styleKey]
+    const { tableHeaderElement, tableInnerWapperElement, tableInnerWapperElementOriginalStyle, tableHeaderElementOriginalStyle } = this.getCurrentTableStickyConfig(option)
+    Object.keys(tableHeaderElementOriginalStyle).forEach(styleKey => {
+      const styleValue = tableHeaderElementOriginalStyle[styleKey]
       tableHeaderElement.style[styleKey] = styleValue
     })
-    Object.keys(tableBodyOriginalStyle).forEach(styleKey => {
-      const styleValue = tableBodyOriginalStyle[styleKey]
-      tableBodyElement.style[styleKey] = styleValue
+    Object.keys(tableInnerWapperElementOriginalStyle).forEach(styleKey => {
+      const styleValue = tableInnerWapperElementOriginalStyle[styleKey]
+      tableInnerWapperElement.style[styleKey] = styleValue
     })
+
     // 移除 fixed 标记
-    this.handleTableHeaderFixed(option, 'remove')
+    this.handleTableHeaderElementFixed(option, 'remove')
   }
 
   /**
@@ -197,10 +194,10 @@ export class TableSticky {
   * @returns { void }
   */
   private scrollElementOnScroll = throttle((option) => {
-    const { scrollElement, fixedTop, tableHeaderOriginalTop } = this.getCurrentTableStickyConfig(option)
+    const { scrollElement, fixedTop, tableHeaderElementOriginalTop } = this.getCurrentTableStickyConfig(option)
     // 滚动条距离顶部的距离
     const scrollElementTop = scrollElement.scrollTop + scrollElement.getBoundingClientRect().top
-    const tableHeaderRealTop = tableHeaderOriginalTop - fixedTop <= 0 ? 0 : tableHeaderOriginalTop - fixedTop
+    const tableHeaderRealTop = tableHeaderElementOriginalTop - fixedTop <= 0 ? 0 : tableHeaderElementOriginalTop - fixedTop
     const isFixed = this.checkTableHeaderElementFixed(option)
     if (scrollElementTop > tableHeaderRealTop) {
       !isFixed && this.setTableHeaderFixed(option)
@@ -227,28 +224,24 @@ export class TableSticky {
    * @param {Option} option 
    * @returns { void }
    */
-  private updateTableStickyConfig(option: Option): void {
+  private updateTableStickyConfig(option: Option, tableStickyConfigs: { [C in keyof TableStickyConfig]?: TableStickyConfig[C] } | TableStickyConfig): void {
     const uid = this.getUid(option)
-    const currentTableStickyConfig = this.getCurrentTableStickyConfig(option)
-    this.tableStickyConfigs.set(uid, {
-      ...currentTableStickyConfig,
-      tableWidth: this.getElementStyle(option.tableElement, 'width'),
-      fixedTop: this.getFixedTop(option),
-      tableHeaderOriginalTop: this.getTableHeaderOriginalTop(option)
-    })
+    const currentTableStickyConfig = this.getCurrentTableStickyConfig(option) || undefined
+    const newTableStickyConfig = Object.assign({}, currentTableStickyConfig, tableStickyConfigs)
+    this.tableStickyConfigs.set(uid, newTableStickyConfig)
   }
   /**
-   * @desc setTableHeader 防抖版本
+   * @desc setTableHeaderWidth 防抖版本
    */
   private setTableHeadWidthDebounce = debounce<TableSticky>(this.setTableHeadWidth, 300)
   /**
    * @desc setTableHeaderFixed 防抖版本
    */
-  private setTableHeaderFixedDebounce = debounce(this.setTableHeaderFixed, 300)
+  private setTableHeaderFixedDebounce = debounce<TableSticky>(this.setTableHeaderFixed, 300)
   /**
    * @desc updateTableStickyConfig 防抖版本
    */
-  private updateTableStickyConfigDebounce = debounce(this.updateTableStickyConfig, 300)
+  private updateTableStickyConfigDebounce = debounce<TableSticky>(this.updateTableStickyConfig, 300)
   /**
    * @desc 监听 el-table 节点的宽度变化
    * @param {Option} option 
@@ -266,9 +259,15 @@ export class TableSticky {
 
       // 如果tableWidth发生变化 则重新设置表头宽度
       if (tableWidth !== currentTableWidth) {
-        this.setTableHeadWidthDebounce(option)
+        const tableStickyConfigs: { [C in keyof TableStickyConfig]?: TableStickyConfig[C] } = {
+          // fixedTop: this.getTableHeaderCurrentTop(option),
+          tableHeaderElementOriginalTop: this.getTableHeaderCurrentTop(option),
+          tableWidth: this.getElementStyle(option.tableElement, 'width'),
+        }
         // 更新配置
-        this.updateTableStickyConfigDebounce(option)
+        this.updateTableStickyConfigDebounce(option, tableStickyConfigs)
+
+        this.setTableHeadWidthDebounce(option)
       }
     });
     resizeObserver.observe(tableElement);
@@ -285,6 +284,7 @@ export class TableSticky {
     // 获取当前的配置，监听parent节点滚动事件
     const { handleScrollElementOnScroll, scrollElement } = this.getCurrentTableStickyConfig(option)
     scrollElement.addEventListener('scroll', handleScrollElementOnScroll)
+
   }
   /**
    * @desc 当table updated 的时候
@@ -292,8 +292,14 @@ export class TableSticky {
    */
   updated(option: Option): void {
     const isFixed = this.checkTableHeaderElementFixed(option)
+    // updated 的时候 执行需要更新 fixed 
+    const tableStickyConfigs: { [C in keyof TableStickyConfig]?: TableStickyConfig[C] } = {
+      fixedTop: this.getFixedTop(option),
+      tableHeaderElementOriginalTop: this.getTableHeaderCurrentTop(option)
+    }
+
     // 更新配置
-    this.updateTableStickyConfigDebounce(option)
+    this.updateTableStickyConfigDebounce(option, tableStickyConfigs)
     // 重新给表头定位
     isFixed && this.setTableHeaderFixedDebounce(option)
   }

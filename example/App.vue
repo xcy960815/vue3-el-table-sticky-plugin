@@ -15,6 +15,7 @@
     </el-form>
 
     <el-table
+      class="el-table-sticky"
       v-sticky="{ top: stickyValue }"
       :data="tableDataState.tableData"
       :header-cell-style="{ background: 'rgb(240, 240, 240)' }"
@@ -120,12 +121,8 @@ onMounted(() => {
   height: 100%;
   width: 100%;
 
-  // margin-top: 100px;
-  .el-form {
-    padding: 10px;
-  }
-
   .demo-form-inline {
+    padding: 10px;
     width: 500px;
     position: sticky;
     top: 0px;
@@ -138,28 +135,8 @@ onMounted(() => {
       font-family: "MONACO";
     }
   }
-
-  .demo-form-inline-1 {
-    background-color: #002ea6;
-
-    :deep(.el-form-item__label) {
-      color: #fcc630;
-      font-weight: 600;
-      font-family: "MONACO";
-    }
-  }
-
-  .vue3-el-table-sticky-plugin-title {
-    text-align: center;
-    position: sticky;
-    top: 0;
-    z-index: 9;
-    opacity: 1;
-    height: 400px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: aqua;
+  .el-table-sticky {
+    margin-top: 20px;
   }
 }
 </style>

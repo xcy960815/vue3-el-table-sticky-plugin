@@ -5,14 +5,16 @@ export interface Option {
     binding: StickyDirectiveBinding
     vnode?: VNode
     installOption?: InstallOption
+    uploadType?: "init" | "update" | "watch"
 }
 export interface TableStickyConfig extends Record<string, number | { [P in keyof CSSStyleDeclaration]?: CSSStyleDeclaration[P] } | EventListener | HTMLElement | ResizeObserver> {
     fixedTop: number
+    tableInnerWapperElement: HTMLElement
     tableHeaderElement: HTMLElement
-    tableHeaderOriginalTop: number
-    tableHeaderOriginalStyle: { [P in Exclude<keyof CSSStyleDeclaration, Exclude<keyof CSSStyleDeclaration, "position" | "zIndex" | "top" | "transition">>]: CSSStyleDeclaration[P] },
+    tableHeaderElementOriginalTop: number
+    tableHeaderElementOriginalStyle: { [P in Exclude<keyof CSSStyleDeclaration, Exclude<keyof CSSStyleDeclaration, "position" | "zIndex" | "top" | "transition">>]: CSSStyleDeclaration[P] },
     tableBodyElement: HTMLElement
-    tableBodyOriginalStyle: { [P in Exclude<keyof CSSStyleDeclaration, Exclude<keyof CSSStyleDeclaration, "marginTop">>]: CSSStyleDeclaration[P] },
+    tableInnerWapperElementOriginalStyle: { [P in Exclude<keyof CSSStyleDeclaration, Exclude<keyof CSSStyleDeclaration, "marginTop">>]: CSSStyleDeclaration[P] },
     scrollElement: HTMLElement
     tableWidth: string
     handleScrollElementOnScroll: EventListener

@@ -1,4 +1,5 @@
 import type { Option } from "./type"
+import { TableStickyConfig } from "./type"
 /**
  * @desc 防抖函数
  * @param {Function} fn 
@@ -6,9 +7,9 @@ import type { Option } from "./type"
  * @param {Boolean} immediate 
  * @returns Function
  */
-export const debounce = function <T = unknown>(fn: (option: Option) => void, delay: number, immediate?: boolean) {
+export const debounce = function <T = unknown>(fn: (option: Option, tableStickyConfigs?: { [C in keyof TableStickyConfig]?: TableStickyConfig[C] }) => void, delay: number, immediate?: boolean) {
     let timer: number = 0
-    return function (this: T, option: Option) {
+    return function (this: T, option: Option, tableStickyConfigs?: { [C in keyof TableStickyConfig]?: TableStickyConfig[C] }) {
         const that = this
         if (timer) {
             clearTimeout(timer)
@@ -20,11 +21,11 @@ export const debounce = function <T = unknown>(fn: (option: Option) => void, del
                 timer = 0
             }, delay)
             if (rightNow) {
-                fn.call(that, option)
+                fn.call(that, option, tableStickyConfigs)
             }
         } else {
             timer = window.setTimeout(() => {
-                fn.call(that, option)
+                fn.call(that, option, tableStickyConfigs)
             }, delay)
         }
     }

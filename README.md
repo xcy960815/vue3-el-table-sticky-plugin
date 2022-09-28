@@ -5,11 +5,13 @@
 <br/>
 
 [![npm](https://img.shields.io/npm/v/vue3-el-table-sticky-plugin.svg)](https://www.npmjs.com/package/vue3-el-table-sticky-plugin)
-[![npm](https://img.shields.io/npm/dm/vue3-el-table-sticky-plugin.svg)](https://www.npmjs.com/package/vue3-el-table-sticky-plugin)
+[![npm](https://img.shields.io/npm/dw/vue3-el-table-sticky-plugin.svg)](https://npmtrends.com/vue3-el-table-sticky-plugin)
 [![npm](https://img.shields.io/npm/l/vue3-el-table-sticky-plugin.svg?sanitize=true)](https://www.npmjs.com/package/vue3-el-table-sticky-plugin)
 [![vue3](https://img.shields.io/badge/vue-3.x-brightgreen.svg)](https://vuejs.org/)
 [![element-plus](https://img.shields.io/badge/element--plus-2.x-brightgreen.svg)](https://element-plus.org/)
 [![vue3](https://img.shields.io/badge/vue--cli-4.x-brightgreen.svg)](https://cli.vuejs.org/)
+
+
 
 <br/>
 > 一个让 element-plus el-table 表头部吸顶的vue3插件

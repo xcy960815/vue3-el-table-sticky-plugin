@@ -15,11 +15,6 @@
               >
                 <el-input placeholder="Approved by" />
               </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="handleAddFormItems(1)">
-                  添加一条数据
-                </el-button>
-              </el-form-item>
             </el-form>
             <el-table
               class="el-table-sticky"
@@ -50,10 +45,16 @@
                 label="Zip"
                 width="120"
               />
-              <el-table-column fixed="right" label="操作" width="120">
+              <el-table-column fixed="right" label="操作" width="180">
                 <template #default>
-                  <el-button link type="primary" size="small">详情</el-button>
-                  <el-button link type="primary" size="small">编辑</el-button>
+                  <el-button
+                    link
+                    type="primary"
+                    size="small"
+                    @click="handleAddFormItems(1)"
+                  >
+                    给表单添加一条数据
+                  </el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -127,11 +128,11 @@ const { stickyTopValue, elFormItemsState, tableDataState, handleAddFormItems } =
 
       .page-content {
         padding: 0;
-        // overflow-y: auto;
+        overflow-y: auto;
         flex: 1;
         width: 100%;
         // 增加底部的空白 可以滚动到底部
-        padding-bottom: 100px;
+        // padding-bottom: 100px;
 
         .not-layout-page {
           height: 100%;

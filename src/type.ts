@@ -46,8 +46,8 @@ export interface TableStickyConfig
   };
   scrollElement: HTMLElement;
   tableWidth: string;
-  handleScrollElementOnScroll: EventListener;
-  resizeObserver: ResizeObserver;
+  scrollElementOnScroll: EventListener;
+  resizeObserver?: ResizeObserver;
 }
 export type TableStickyConfigs = Map<string, TableStickyConfig>;
 export type StickyDirectiveBinding = DirectiveBinding<{

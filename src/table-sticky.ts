@@ -4,14 +4,13 @@ import type {
   TableStickyConfigs,
   VNodeNormalizedRefAtom,
 } from "./type";
-import { debounce, throttle } from "./utils";
-
+import { Debounce, Throttle } from "./utils";
 export class TableSticky {
   private tableStickyConfigs: TableStickyConfigs = new Map();
   /**
    * @desc 判断tableheader 节点是否 已经 fixed
-   * @param option
-   * @returns boolean
+   * @param option {Option}
+   * @returns {boolean}
    */
   private checkTableHeaderElementFixed(option: Option): boolean {
     const tableHeaderElement = this.getTableHeaderElement(option);
@@ -126,7 +125,7 @@ export class TableSticky {
    * @desc 获取tableHeader节点距离body的top值
    * @desc 只有在初始化的时候 才会采用 用户传递进来的值
    * @param {Option} option
-   * @returns
+   * @returns {Number}
    */
   private getFixedTop(option: Option): number {
     const { binding, installOption } = option;
@@ -174,10 +173,8 @@ export class TableSticky {
         },
         tableWidth: this.getElementStyle(option.tableElement, "width"),
         scrollElement,
-        handleScrollElementOnScroll: () => {
-          this.scrollElementOnScroll(option);
-        },
-        resizeObserver: this.handleWatchTableElement(option),
+        scrollElementOnScroll: this.scrollElementOnScroll.bind(this, option),
+        resizeObserver: this.handleGetTableResizeObserver(option),
       };
       this.updateTableStickyConfig(option, initTableStickyConfig);
     }
@@ -188,6 +185,7 @@ export class TableSticky {
    * @param {Option} option
    * @returns {void}
    */
+  @Debounce(300, true)
   private setTableHeaderFixed(option: Option): void {
     const { tableElement } = option;
     const { tableHeaderElement, tableInnerWapperElement, fixedTop } =
@@ -202,6 +200,7 @@ export class TableSticky {
         ),
       0
     );
+
     tableHeaderElement.style.position = "fixed";
     tableHeaderElement.style.zIndex = `${maxZIndex}`;
     tableHeaderElement.style.top = fixedTop + "px";
@@ -242,32 +241,34 @@ export class TableSticky {
    * @param {Option} option
    * @returns { void }
    */
-  private scrollElementOnScroll = throttle((option) => {
+  @Throttle(0)
+  private scrollElementOnScroll(option) {
     const { scrollElement, fixedTop, tableHeaderElementOriginalTop } =
       this.getCurrentTableStickyConfig(option);
     // 滚动条距离body顶部的距离
-    const scrollElementTop = scrollElement.scrollTop; //+ scrollElement.getBoundingClientRect().top;
-    // 如果用户设置的fixedTop大于tableHeaderElement的原始top值 那么直接让tableHeader在原来的位置fixed
-    const tableHeaderfixedTopValue =
+    const scrollElementTop = scrollElement.scrollTop;
+    // 滚动条可以滚动的最大距离 也就是tableHeaderElement的原始top值减去用户设置的fixedTop
+    const scrollElementMaxAllowTop =
+      // 如果用户设置的fixedTop大于tableHeaderElement的原始top值 那么直接让tableHeader在原来的位置fixed
       tableHeaderElementOriginalTop - fixedTop <= 0
         ? 0
         : // 获取滚动条可以滚动的最大距离
           tableHeaderElementOriginalTop - fixedTop;
-
     // 判断当前tableHeader是否已经被fixed
     const isFixed = this.checkTableHeaderElementFixed(option);
-    if (scrollElementTop > tableHeaderfixedTopValue) {
-      !isFixed && this.setTableHeaderFixed(option);
-    } else {
+    if (scrollElementMaxAllowTop - scrollElementTop >= 0) {
       isFixed && this.removeTableHeaderFixed(option);
+    } else {
+      !isFixed && this.setTableHeaderFixed(option);
     }
-  }, 0);
+  }
 
   /**
    * @desc 当页面宽度发生变更的时候 重新设置表头宽度 使其表头宽度和表body宽度保持一直
    * @desc 不能将表头宽度设置成 table 宽度 有时候表头宽度会小于表宽度
    * @param {Option} option
    */
+  @Debounce(300)
   private setTableHeadWidth(option) {
     // 从当前配置中获取 tableBodyElement节点和 tableHeaderElement 节点
     const { tableBodyElement, tableHeaderElement } =
@@ -282,11 +283,12 @@ export class TableSticky {
    * @param {Option} option
    * @returns { void }
    */
+  @Debounce(300, true)
   private updateTableStickyConfig(
     option: Option,
-    tableStickyConfigs:
-      | { [C in keyof TableStickyConfig]?: TableStickyConfig[C] }
-      | TableStickyConfig
+    tableStickyConfigs: {
+      [Key in keyof TableStickyConfig]?: TableStickyConfig[Key];
+    }
   ): void {
     const uid = this.getUid(option);
     const currentTableStickyConfig =
@@ -299,33 +301,15 @@ export class TableSticky {
     this.tableStickyConfigs.set(uid, newTableStickyConfig);
   }
   /**
-   * @desc setTableHeaderWidth 防抖版本
-   */
-  private setTableHeadWidthDebounce = debounce<TableSticky>(
-    this.setTableHeadWidth,
-    300
-  );
-  /**
-   * @desc setTableHeaderFixed 防抖版本
-   */
-  private setTableHeaderFixedDebounce = debounce<TableSticky>(
-    this.setTableHeaderFixed,
-    300
-  );
-  /**
-   * @desc updateTableStickyConfig 防抖版本
-   */
-  private updateTableStickyConfigDebounce = debounce<TableSticky>(
-    this.updateTableStickyConfig,
-    300
-  );
-  /**
-   * @desc 监听 el-table 节点的宽度变化
+   * @desc 监听 el-table 节点的宽度变化 也可以监听页面宽度变化
    * @param {Option} option
+   * @returns { ResizeObserver }
    */
-  private handleWatchTableElement(option: Option): ResizeObserver {
+  private handleGetTableResizeObserver(option: Option): ResizeObserver {
     const { tableElement } = option;
-    const resizeObserver = new ResizeObserver((entries) => {
+    const tableResizeObserver = new ResizeObserver((entries) => {
+      console.log("dom resize");
+
       // 获取现在tableWidth
       let currentTableWidth: string;
       for (const entry of entries) {
@@ -333,65 +317,74 @@ export class TableSticky {
         currentTableWidth = this.getElementStyle(tableElement, "width");
       }
       const { tableWidth } = this.getCurrentTableStickyConfig(option);
-
       // 如果tableWidth发生变化 则重新设置表头宽度
       if (tableWidth !== currentTableWidth) {
+        console.log("tableWidth发生变化");
+
         const tableStickyConfigs: {
-          [C in keyof TableStickyConfig]?: TableStickyConfig[C];
+          [Key in keyof TableStickyConfig]?: TableStickyConfig[Key];
         } = {
           // fixedTop: this.getTableHeaderCurrentTop(option),
-          tableHeaderElementOriginalTop: this.getTableHeaderCurrentTop(option),
+          // TODO?????
+          // tableHeaderElementOriginalTop: this.getTableHeaderCurrentTop(option),
           tableWidth: this.getElementStyle(option.tableElement, "width"),
         };
-        // 更新配置
-        this.updateTableStickyConfigDebounce(option, tableStickyConfigs);
 
-        this.setTableHeadWidthDebounce(option);
+        // 更新配置
+        this.updateTableStickyConfig(option, tableStickyConfigs);
+        // 重新设置表头宽度
+        this.setTableHeadWidth(option);
+
+        this.setTableHeaderFixed(option);
       }
     });
-    resizeObserver.observe(tableElement);
-    return resizeObserver;
+    tableResizeObserver.observe(tableElement);
+    return tableResizeObserver;
   }
 
   /**
    * @desc 当table mounted 的时候
    * @param {Option} option
+   * @returns { void }
    */
   mounted(option: Option): void {
     // 初始化配置
     this.initTableStickyConfig(option);
     // 获取当前的配置，监听parent节点滚动事件
-    const { handleScrollElementOnScroll, scrollElement } =
+    const { scrollElementOnScroll, scrollElement } =
       this.getCurrentTableStickyConfig(option);
-    scrollElement.addEventListener("scroll", handleScrollElementOnScroll);
+    scrollElement.addEventListener("scroll", scrollElementOnScroll);
   }
   /**
    * @desc 当table updated 的时候
    * @param {Option} option
+   * @returns { void }
    */
   updated(option: Option): void {
     const isFixed = this.checkTableHeaderElementFixed(option);
-    // updated 的时候 执行需要更新 fixed
+    // updated 的时候 更新数据、更新配置、重新给表头定位
     const tableStickyConfigs: {
       [C in keyof TableStickyConfig]?: TableStickyConfig[C];
     } = {
       fixedTop: this.getFixedTop(option),
       tableHeaderElementOriginalTop: this.getTableHeaderCurrentTop(option),
     };
-
     // 更新配置
-    this.updateTableStickyConfigDebounce(option, tableStickyConfigs);
+    // this.updateTableStickyConfigDebounce(option, tableStickyConfigs);
+    this.updateTableStickyConfig(option, tableStickyConfigs);
     // 重新给表头定位
-    isFixed && this.setTableHeaderFixedDebounce(option);
+    // isFixed && this.setTableHeaderFixedDebounce(option);
+    isFixed && this.setTableHeaderFixed(option);
   }
   /**
    * @desc 当table unmounted 的时候
    * @param {Option} option
+   * @returns { void }
    */
   unmounted(option: Option): void {
-    const { handleScrollElementOnScroll, scrollElement, resizeObserver } =
+    const { scrollElementOnScroll, scrollElement, resizeObserver } =
       this.getCurrentTableStickyConfig(option);
-    scrollElement.removeEventListener("scroll", handleScrollElementOnScroll);
+    scrollElement.removeEventListener("scroll", scrollElementOnScroll);
     resizeObserver.disconnect();
   }
 }

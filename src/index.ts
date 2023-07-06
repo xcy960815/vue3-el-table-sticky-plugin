@@ -26,12 +26,7 @@ const install = (app: App, installOption?: InstallOption) => {
       binding: DirectiveBinding<{ top: number; parent: string }>,
       vnode: VNode
     ) {
-      if (
-        binding.value.top !== binding.oldValue.top ||
-        binding.value.parent !== binding.oldValue.parent
-      ) {
-        tableSticky.updated({ tableElement, binding, vnode, installOption });
-      }
+      tableSticky.updated({ tableElement, binding, vnode, installOption });
     },
     unmounted(
       tableElement: HTMLElement,

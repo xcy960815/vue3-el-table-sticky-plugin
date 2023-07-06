@@ -62,15 +62,18 @@ export const app = function () {
   onMounted(() => {
     // 监听节点class 为 table-top-dom 的高度变化
     const tableTopDom = document.querySelector(".table-top-dom");
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const targetElement = entry.target as HTMLDivElement;
-        stickyTopValue.value = targetElement.getBoundingClientRect().top;
-      }
-    });
-    tableTopDom && resizeObserver.observe(tableTopDom);
+    // const resizeObserver = new ResizeObserver((entries) => {
+    //   for (const entry of entries) {
+    //     const targetElement = entry.target as HTMLDivElement;
+    //     const targetElementTop = targetElement.getBoundingClientRect().top;
 
-    handleAddFormItems(3);
+    //     stickyTopValue.value = targetElementTop;
+    //   }
+    // });
+    // tableTopDom && resizeObserver.observe(tableTopDom);
+    const targetElementTop = tableTopDom?.getBoundingClientRect().top;
+    stickyTopValue.value = targetElementTop || 0;
+    handleAddFormItems(2);
   });
 
   return {

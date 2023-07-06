@@ -50,52 +50,182 @@ app.mount("#app");
 ```html
 <!-- xxx.vue -->
 <template>
-  <div class="vue3-el-table-sticky-plugin">
-    <el-form inline class="table-top-dom">
-      <el-form-item
-        :label="formItem.label"
-        v-for="formItem in elFormItemsState.elFormItems"
-      >
-        <el-input placeholder="Approved by" />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="handleAddFormItems(1)">
-          添加一条数据
-        </el-button>
-      </el-form-item>
-    </el-form>
-
-    <el-table
-      class="el-table-sticky"
-      v-sticky="{ top: stickyTopValue }"
-      :data="tableDataState.tableData"
-      :header-cell-style="{ background: 'rgb(240, 240, 240)' }"
-      border
-      style="100%"
-    >
-      <el-table-column
-        fixed="left"
-        prop="date"
-        label="Date"
-        width="150"
-      ></el-table-column>
-      <el-table-column fixed="left" prop="name" label="Name" width="250" />
-      <el-table-column prop="state" label="State" width="250" />
-      <el-table-column prop="city" label="City" width="250" />
-      <el-table-column prop="address" label="Address" width="620" />
-      <el-table-column fixed="right" prop="zip" label="Zip" width="120" />
-      <el-table-column fixed="right" label="操作" width="120">
-        <template #default>
-          <el-button link type="primary" size="small">详情</el-button>
-          <el-button link type="primary" size="small">编辑</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-  </div>
+  <el-container class="layout-main">
+    <el-header>头部导航栏</el-header>
+    <el-container class="layout-body">
+      <el-aside class="layout-aside"> 左侧菜单栏 </el-aside>
+      <el-main class="layout-page">
+        <el-main class="page-content">
+          <!-- 因为这个只是开发测试demo 所以就写在一个文件里面 就行本人喜欢将固定的滚动写在layout布局里面 极端场景会将滚动写在具体的业务 .vue文件的根节点上 -->
+          <!-- 业务 .vue文件的根节点 -->
+          <div class="not-layout-page">
+            <el-form inline class="table-top-dom">
+              <el-form-item
+                :label="formItem.label"
+                v-for="formItem in elFormItemsState.elFormItems"
+              >
+                <el-input placeholder="Approved by" />
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="handleAddFormItems(1)">
+                  添加一条数据
+                </el-button>
+              </el-form-item>
+            </el-form>
+            <el-table
+              class="el-table-sticky"
+              v-sticky="{ top: stickyTopValue, parent: '.not-layout-page' }"
+              :data="tableDataState.tableData"
+              :header-cell-style="{ background: 'rgb(240, 240, 240)' }"
+              border
+              style="100%"
+            >
+              <el-table-column
+                fixed="left"
+                prop="date"
+                label="Date"
+                width="150"
+              ></el-table-column>
+              <el-table-column
+                fixed="left"
+                prop="name"
+                label="Name"
+                width="250"
+              />
+              <el-table-column prop="state" label="State" width="250" />
+              <el-table-column prop="city" label="City" width="250" />
+              <el-table-column prop="address" label="Address" width="620" />
+              <el-table-column
+                fixed="right"
+                prop="zip"
+                label="Zip"
+                width="120"
+              />
+              <el-table-column fixed="right" label="操作" width="120">
+                <template #default>
+                  <el-button link type="primary" size="small">详情</el-button>
+                  <el-button link type="primary" size="small">编辑</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </el-main>
+      </el-main>
+    </el-container>
+  </el-container>
 </template>
 
 <script lang="ts" setup>
-  import { onMounted, reactive, ref } from "vue";
+  import { app } from "./App";
+  const {
+    stickyTopValue,
+    elFormItemsState,
+    tableDataState,
+    handleAddFormItems,
+  } = app();
+</script>
+<style lang="less" scoped>
+  .layout-main {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    flex-basis: auto;
+    box-sizing: border-box;
+
+    .el-header {
+      background-color: rgb(0, 21, 41);
+      color: #fff;
+      font-size: 16px;
+      font-family: "Courier New", Courier, monospace;
+      font-weight: 600;
+      text-align: center;
+      line-height: 60px;
+    }
+
+    .layout-body {
+      display: flex;
+      overflow: hidden;
+
+      .layout-aside {
+        width: 200px;
+        background-color: rgb(0, 21, 41);
+        transition: all 0.4s ease 0s;
+        color: #fff;
+        font-size: 16px;
+        font-family: "Courier New", Courier, monospace;
+        font-weight: 600;
+        text-align: center;
+        line-height: 60px;
+      }
+
+      .layout-page {
+        overflow: hidden;
+        --el-main-padding: 10px;
+        padding: var(--el-main-padding);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+
+        .page-title {
+          width: 100%;
+          position: relative;
+          padding: 0.5em 10px;
+          border-bottom: 1px dashed #ccc;
+          margin-bottom: 1em;
+
+          h3 {
+            margin: 0;
+          }
+        }
+
+        .page-content {
+          padding: 0;
+          // overflow-y: auto;
+          flex: 1;
+          width: 100%;
+          // 增加底部的空白 可以滚动到底部
+          padding-bottom: 100px;
+
+          .not-layout-page {
+            height: 100%;
+            overflow-y: auto;
+          }
+          .table-top-dom {
+            padding: 10px;
+            width: 500px;
+            // position: sticky;
+            // top: 0px;
+            // z-index: 10;
+            background-color: #fcc630;
+
+            :deep(.el-form-item__label) {
+              color: #002ea6;
+              font-weight: 600;
+              font-family: "MONACO";
+            }
+          }
+        }
+
+        .page-footer {
+          width: 100%;
+          // background-color: #ccc;
+          padding: 0.5em 10px;
+          border-top: 1px dashed #ccc;
+          border-bottom: 1px dashed #ccc;
+        }
+      }
+    }
+  }
+</style>
+```
+
+```ts
+// app.ts
+import { onMounted, reactive, ref } from "vue";
+
+export const app = function () {
   const stickyTopValue = ref<number>(0);
   const elFormItemsState = reactive<{
     elFormItems: Array<{ label: string }>;
@@ -142,6 +272,7 @@ app.mount("#app");
       elFormItemsState.elFormItems.push({ label: "test-label" });
     }
   };
+
   const handleAddTableData = () => {
     tableDataState.tableData.push({
       date: "添加的数据",
@@ -155,42 +286,26 @@ app.mount("#app");
   };
   onMounted(() => {
     // 监听节点class 为 table-top-dom 的高度变化
-    const demoFormInline = document.querySelector(".table-top-dom");
+    const tableTopDom = document.querySelector(".table-top-dom");
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        const tableElement = entry.target as HTMLDivElement;
-        stickyTopValue.value = tableElement.getBoundingClientRect().height;
+        const targetElement = entry.target as HTMLDivElement;
+        stickyTopValue.value = targetElement.getBoundingClientRect().top;
       }
     });
-    demoFormInline && resizeObserver.observe(demoFormInline);
+    tableTopDom && resizeObserver.observe(tableTopDom);
+
     handleAddFormItems(3);
   });
-</script>
-<style lang="less" scoped>
-  .vue3-el-table-sticky-plugin {
-    overflow-y: scroll;
-    height: 100%;
-    width: 100%;
 
-    .table-top-dom {
-      padding: 10px;
-      width: 500px;
-      position: sticky;
-      top: 0px;
-      z-index: 10;
-      background-color: #fcc630;
-
-      :deep(.el-form-item__label) {
-        color: #002ea6;
-        font-weight: 600;
-        font-family: "MONACO";
-      }
-    }
-    .el-table-sticky {
-      margin-top: 20px;
-    }
-  }
-</style>
+  return {
+    stickyTopValue,
+    elFormItemsState,
+    tableDataState,
+    handleAddTableData,
+    handleAddFormItems,
+  };
+};
 ```
 
 #### 可把上述代码复制到自己项目里面试试

@@ -240,6 +240,7 @@ export class TableStickyPlugin {
    */
   private getWillChangeElementsOriginalHeight(option: Option): Array<string> {
     const { willBeChangeElementClasses } = option.binding.value;
+    if (!willBeChangeElementClasses) return [];
     return willBeChangeElementClasses.map((willBeChangeNodeclass) => {
       const height = this.getElementStyle(document.querySelector(willBeChangeNodeclass), 'height');
       return height;
@@ -252,6 +253,7 @@ export class TableStickyPlugin {
    */
   private getWillChangeElementsResizeObserver(option: Option): Array<ResizeObserver> {
     const { willBeChangeElementClasses } = option.binding.value;
+    if (!willBeChangeElementClasses) return [];
     return willBeChangeElementClasses.map((willBeChangeElementclass, index) => {
       // 获取当前节点
       const willChangeElement = document.querySelector(willBeChangeElementclass);

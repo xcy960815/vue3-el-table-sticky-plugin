@@ -44,19 +44,19 @@ const install = (app: App, installOption?: InstallOption) => {
         installOption,
       });
     },
-    // /**
-    //  * @description 指令所在组件的 VNode 及其子 VNode 全部更新后调用
-    //  * @param tableElement {HTMLElement}
-    //  * @param binding {{ top: number, parent: string }}
-    //  * @param vnode {VNode}
-    //  */
-    // unmounted(
-    //   tableElement: HTMLElement,
-    //   binding: DirectiveBinding<DirectiveBindingValue>,
-    //   vnode: VNode
-    // ) {
-    //   // tableSticky.unmounted({ tableElement, binding, vnode, installOption });
-    // },
+    /**
+     * @description 指令所在组件的 VNode 及其子 VNode 全部更新后调用
+     * @param tableElement {HTMLElement}
+     * @param binding {{ top: number, parent: string }}
+     * @param vnode {VNode}
+     */
+    unmounted(
+      tableElement: HTMLElement,
+      binding: DirectiveBinding<DirectiveBindingValue>,
+      vnode: VNode,
+    ) {
+      tableStickyPlugin.unmounted({ tableElement, binding, vnode, installOption });
+    },
   });
 };
 

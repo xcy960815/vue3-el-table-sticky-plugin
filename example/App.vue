@@ -16,12 +16,12 @@
                 <el-input placeholder="Approved by" />
               </el-form-item>
             </el-form>
+            <!-- willBeChangeElementClasses: ['.table-top-dom'], -->
             <el-table
               class="el-table-sticky"
               v-sticky="{
                 top: stickyTopValue,
                 parent: '.not-layout-page',
-                willBeChangeElementClasses: ['.table-top-dom'],
               }"
               :data="tableDataState.tableData"
               :header-cell-style="{ background: 'rgb(0, 0, 255)' }"

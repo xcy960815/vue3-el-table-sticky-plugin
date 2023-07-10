@@ -1,74 +1,84 @@
 {
-    "name": "vue3-el-table-sticky-plugin",
-    "description": "一个让element-plus el-table 头部吸顶的vue3插件",
-    "version": "0.0.15",
-    "license": "MIT",
-    "private": false,
-    "main": "dist/vue3-el-table-sticky-plugin.umd.js",
-    "module": "dist/vue3-el-table-sticky-plugin.esm.js",
-    "types": "types/vue3-el-table-sticky-plugin.d.ts",
-    "scripts": {
-        "dev": "NODE_ENV=development rollup -c -w",
-        "build": "NODE_ENV=production rollup -c && api-extractor run && rm -rf ./temp",
-        "link": "npm link && npm link vue3-el-table-sticky-plugin",
-        "serve": "vue-cli-service serve"
-    },
-    "keywords": [
-        "vue3-el-table-sticky-plugin",
-        "el-table-sticky",
-        "vue3-el-table",
-        "sticky"
-    ],
-    "author": {
-        "name": "xcy960815",
-        "email": "18763006837@163.com"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/xcy960815/vue3-el-table-sticky-plugin.git"
-    },
-    "bugs": {
-        "email": "18763006837@163.com",
-        "url": "https://github.com/xcy960815/vue3-el-table-sticky-plugin.git/issues"
-    },
-    "peerDependencies": {
-        "vue": "^3.2.13"
-    },
-    "devDependencies": {
-        "@babel/core": "^7.12.3",
-        "@babel/plugin-transform-runtime": "^7.14.5",
-        "@microsoft/api-extractor": "^7.28.3",
-        "@rollup/plugin-alias": "^3.1.9",
-        "@rollup/plugin-babel": "^5.3.1",
-        "@rollup/plugin-commonjs": "^16.0.0",
-        "@rollup/plugin-json": "^4.1.0",
-        "@rollup/plugin-node-resolve": "^10.0.0",
-        "@vitejs/plugin-vue": "2.3.3",
-        "@vue/cli-plugin-typescript": "5.0.0",
-        "@vue/cli-service": "^5.0.8",
-        "autoprefixer": "^10.4.7",
-        "element-plus": "^2.2.9",
-        "less": "^4.1.3",
-        "less-loader": "^11.0.0",
-        "rollup": "^2.33.1",
-        "rollup-plugin-delete": "^2.0.0",
-        "rollup-plugin-filesize": "^9.1.2",
-        "rollup-plugin-gzip": "^3.0.1",
-        "rollup-plugin-json": "^4.0.0",
-        "rollup-plugin-livereload": "^2.0.5",
-        "rollup-plugin-postcss": "^4.0.2",
-        "rollup-plugin-progress": "^1.1.2",
-        "rollup-plugin-serve": "^1.1.0",
-        "rollup-plugin-sourcemaps": "^0.6.3",
-        "rollup-plugin-terser": "^7.0.2",
-        "rollup-plugin-typescript2": "^0.32.1",
-        "tslib": "^2.0.3",
-        "typescript": "~4.5.5",
-        "vite": "^2.9.13",
-        "vue": "^3.2.13",
-        "yallist": "^4.0.0"
-    },
-    "engines": {
-        "node": ">=12"
+  "name": "vue3-el-table-sticky-plugin",
+  "description": "一个让element-plus el-table 头部吸顶的vue3插件",
+  "version": "0.0.16",
+  "license": "MIT",
+  "private": false,
+  "main": "dist/vue3-el-table-sticky-plugin.umd.js",
+  "module": "dist/vue3-el-table-sticky-plugin.esm.js",
+  "types": "types/vue3-el-table-sticky-plugin.d.ts",
+  "scripts": {
+    "dev": "NODE_ENV=development rollup -c -w",
+    "build": "NODE_ENV=production rollup -c && api-extractor run && rm -rf ./temp",
+    "link": "npm link && npm link vue3-el-table-sticky-plugin",
+    "serve": "vue-cli-service serve"
+  },
+  "keywords": [
+    "vue3-el-table-sticky-plugin",
+    "el-table-sticky",
+    "vue3-el-table",
+    "sticky"
+  ],
+  "author": {
+    "name": "xcy960815",
+    "email": "18763006837@163.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xcy960815/vue3-el-table-sticky-plugin.git"
+  },
+  "bugs": {
+    "email": "18763006837@163.com",
+    "url": "https://github.com/xcy960815/vue3-el-table-sticky-plugin.git/issues"
+  },
+  "peerDependencies": {
+    "vue": "^3.2.13"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.3",
+    "@babel/plugin-transform-runtime": "^7.14.5",
+    "@microsoft/api-extractor": "^7.28.3",
+    "@rollup/plugin-alias": "^3.1.9",
+    "@rollup/plugin-babel": "^5.3.1",
+    "@rollup/plugin-commonjs": "^16.0.0",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^10.0.0",
+    "@vitejs/plugin-vue": "2.3.3",
+    "@vue/cli-plugin-typescript": "5.0.0",
+    "@vue/cli-service": "^5.0.8",
+    "autoprefixer": "^10.4.7",
+    "element-plus": "^2.2.9",
+    "less": "^4.1.3",
+    "less-loader": "^11.0.0",
+    "rollup": "^2.33.1",
+    "rollup-plugin-delete": "^2.0.0",
+    "rollup-plugin-filesize": "^9.1.2",
+    "rollup-plugin-gzip": "^3.0.1",
+    "rollup-plugin-json": "^4.0.0",
+    "rollup-plugin-livereload": "^2.0.5",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-progress": "^1.1.2",
+    "rollup-plugin-serve": "^1.1.0",
+    "rollup-plugin-sourcemaps": "^0.6.3",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.32.1",
+    "tslib": "^2.0.3",
+    "typescript": "~4.5.5",
+    "vite": "^2.9.13",
+    "vue": "^3.2.13",
+    "yallist": "^4.0.0",
+    "husky": "^1.3.1",
+    "prettier": "^2.8.7",
+    "pretty-quick": "^1.8.0",
+    "vcm-cli": "^1.0.5"
+  },
+  "engines": {
+    "node": ">=12"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged",
+      "commit-msg": "vcm"
     }
+  }
 }

@@ -3,11 +3,7 @@
 </p>
 <br/>
 
-[![npm](https://img.shields.io/npm/v/vue3-el-table-sticky-plugin.svg)](https://www.npmjs.com/package/vue3-el-table-sticky-plugin)
-[![npm](https://img.shields.io/npm/dw/vue3-el-table-sticky-plugin.svg)](https://npmtrends.com/vue3-el-table-sticky-plugin)
-[![npm](https://img.shields.io/npm/l/vue3-el-table-sticky-plugin.svg?sanitize=true)](https://www.npmjs.com/package/vue3-el-table-sticky-plugin)
-[![vue3](https://img.shields.io/badge/vue-3.x-brightgreen.svg)](https://vuejs.org/)
-[![vue3](https://img.shields.io/badge/vue--cli-4.x-brightgreen.svg)](https://cli.vuejs.org/)
+[![npm](https://img.shields.io/npm/v/vue3-el-table-sticky-plugin.svg)](https://www.npmjs.com/package/vue3-el-table-sticky-plugin) [![npm](https://img.shields.io/npm/dw/vue3-el-table-sticky-plugin.svg)](https://npmtrends.com/vue3-el-table-sticky-plugin) [![npm](https://img.shields.io/npm/l/vue3-el-table-sticky-plugin.svg?sanitize=true)](https://www.npmjs.com/package/vue3-el-table-sticky-plugin) [![vue3](https://img.shields.io/badge/vue-3.x-brightgreen.svg)](https://vuejs.org/) [![vue3](https://img.shields.io/badge/vue--cli-4.x-brightgreen.svg)](https://cli.vuejs.org/)
 
 <br/>
 > 一个让 element-plus el-table 表头部吸顶的vue3插件
@@ -30,19 +26,21 @@ npm i vue3-el-table-sticky-plugin -S
 
     2. top 可选参数 (参数优先级 指令使用处 > 指令注册处 > 插件兜底(基于当前table-header距离body的top值))
 
-    3. 实际使用情况还会更复杂 本插件只是在理想状态下面做的封装 如有不足还请指出
+    3. willBeChangeElementClasses 可选参数 (参数优先级 指令使用处 > 指令注册处
+
+    4. 实际使用情况还会更复杂 本插件只是在理想状态下面做的封装 如有不足还请指出
 
 #### 引入
 
 ```ts
 // main.ts
-import { createApp } from "vue";
-import App from "./App.vue";
-import Vue3TableStickyPlugin from "vue3-el-table-sticky-plugin";
+import { createApp } from 'vue';
+import App from './App.vue';
+import Vue3TableStickyPlugin from 'vue3-el-table-sticky-plugin';
 const app = createApp(App);
 // 注入全局指令
 app.use(Vue3TableStickyPlugin);
-app.mount("#app");
+app.mount('#app');
 ```
 
 #### 使用
@@ -66,45 +64,30 @@ app.mount("#app");
               >
                 <el-input placeholder="Approved by" />
               </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="handleAddFormItems(1)">
-                  添加一条数据
-                </el-button>
-              </el-form-item>
             </el-form>
             <el-table
               class="el-table-sticky"
-              v-sticky="{ top: stickyTopValue, parent: '.not-layout-page' }"
+              v-sticky="{
+                top: stickyTopValue,
+                parent: '.not-layout-page',
+                willBeChangeElementClasses: ['.table-top-dom'],
+              }"
               :data="tableDataState.tableData"
-              :header-cell-style="{ background: 'rgb(240, 240, 240)' }"
+              :header-cell-style="{ background: 'rgb(0, 0, 255)' }"
               border
               style="100%"
             >
-              <el-table-column
-                fixed="left"
-                prop="date"
-                label="Date"
-                width="150"
-              ></el-table-column>
-              <el-table-column
-                fixed="left"
-                prop="name"
-                label="Name"
-                width="250"
-              />
+              <el-table-column fixed="left" prop="date" label="Date" width="150"></el-table-column>
+              <el-table-column fixed="left" prop="name" label="Name" width="250" />
               <el-table-column prop="state" label="State" width="250" />
               <el-table-column prop="city" label="City" width="250" />
               <el-table-column prop="address" label="Address" width="620" />
-              <el-table-column
-                fixed="right"
-                prop="zip"
-                label="Zip"
-                width="120"
-              />
-              <el-table-column fixed="right" label="操作" width="120">
+              <el-table-column fixed="right" prop="zip" label="Zip" width="120" />
+              <el-table-column fixed="right" label="操作" width="180">
                 <template #default>
-                  <el-button link type="primary" size="small">详情</el-button>
-                  <el-button link type="primary" size="small">编辑</el-button>
+                  <el-button link type="primary" size="small" @click="handleAddFormItems(1)">
+                    给表单添加一条数据
+                  </el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -116,13 +99,8 @@ app.mount("#app");
 </template>
 
 <script lang="ts" setup>
-  import { app } from "./App";
-  const {
-    stickyTopValue,
-    elFormItemsState,
-    tableDataState,
-    handleAddFormItems,
-  } = app();
+  import { app } from './App';
+  const { stickyTopValue, elFormItemsState, tableDataState, handleAddFormItems } = app();
 </script>
 <style lang="less" scoped>
   .layout-main {
@@ -138,7 +116,7 @@ app.mount("#app");
       background-color: rgb(0, 21, 41);
       color: #fff;
       font-size: 16px;
-      font-family: "Courier New", Courier, monospace;
+      font-family: 'Courier New', Courier, monospace;
       font-weight: 600;
       text-align: center;
       line-height: 60px;
@@ -154,7 +132,7 @@ app.mount("#app");
         transition: all 0.4s ease 0s;
         color: #fff;
         font-size: 16px;
-        font-family: "Courier New", Courier, monospace;
+        font-family: 'Courier New', Courier, monospace;
         font-weight: 600;
         text-align: center;
         line-height: 60px;
@@ -168,42 +146,27 @@ app.mount("#app");
         display: flex;
         flex-direction: column;
 
-        .page-title {
-          width: 100%;
-          position: relative;
-          padding: 0.5em 10px;
-          border-bottom: 1px dashed #ccc;
-          margin-bottom: 1em;
-
-          h3 {
-            margin: 0;
-          }
-        }
-
         .page-content {
           padding: 0;
-          // overflow-y: auto;
+          overflow-y: auto;
           flex: 1;
           width: 100%;
-          // 增加底部的空白 可以滚动到底部
-          padding-bottom: 100px;
 
           .not-layout-page {
             height: 100%;
             overflow-y: auto;
           }
           .table-top-dom {
+            box-sizing: border-box;
             padding: 10px;
-            width: 500px;
-            // position: sticky;
-            // top: 0px;
-            // z-index: 10;
+            width: 50%;
             background-color: #fcc630;
+            // overflow-anchor: none;
 
             :deep(.el-form-item__label) {
               color: #002ea6;
               font-weight: 600;
-              font-family: "MONACO";
+              font-family: 'MONACO';
             }
           }
         }
@@ -223,7 +186,7 @@ app.mount("#app");
 
 ```ts
 // app.ts
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref } from 'vue';
 
 export const app = function () {
   const stickyTopValue = ref<number>(0);
@@ -248,52 +211,52 @@ export const app = function () {
   // 模拟数据
   for (let index = 0; index < 49; index++) {
     tableDataState.tableData.push({
-      date: "2016-05-03",
-      name: "Tom",
-      state: "California",
-      city: "Los Angeles",
-      address: "No. 189, Grove St, Los Angeles",
-      zip: "CA 90036",
-      tag: "Home",
+      date: '2016-05-03',
+      name: 'Tom',
+      state: 'California',
+      city: 'Los Angeles',
+      address: 'No. 189, Grove St, Los Angeles',
+      zip: 'CA 90036',
+      tag: 'Home',
     });
   }
   tableDataState.tableData.unshift({
-    date: "第一条数据",
-    name: "第一条数据",
-    state: "第一条数据",
-    city: "第一条数据",
-    address: "第一条数据",
-    zip: "第一条数据",
-    tag: "第一条数据",
+    date: '第一条数据',
+    name: '第一条数据',
+    state: '第一条数据',
+    city: '第一条数据',
+    address: '第一条数据',
+    zip: '第一条数据',
+    tag: '第一条数据',
   });
 
   const handleAddFormItems = (formItemCount: number) => {
     for (let index = 0; index < formItemCount; index++) {
-      elFormItemsState.elFormItems.push({ label: "test-label" });
+      elFormItemsState.elFormItems.push({ label: 'test-label' });
     }
   };
 
   const handleAddTableData = () => {
     tableDataState.tableData.push({
-      date: "添加的数据",
-      name: "添加的数据",
-      state: "添加的数据",
-      city: "添加的数据",
-      address: "添加的数据",
-      zip: "添加的数据",
-      tag: "添加的数据",
+      date: '添加的数据',
+      name: '添加的数据',
+      state: '添加的数据',
+      city: '添加的数据',
+      address: '添加的数据',
+      zip: '添加的数据',
+      tag: '添加的数据',
     });
   };
   onMounted(() => {
     // 监听节点class 为 table-top-dom 的高度变化
-    const tableTopDom = document.querySelector(".table-top-dom");
-    const resizeObserver = new ResizeObserver((entries) => {
+    const tableTopDom = document.querySelector('.table-top-dom');
+    const tableElementResizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const targetElement = entry.target as HTMLDivElement;
         stickyTopValue.value = targetElement.getBoundingClientRect().top;
       }
     });
-    tableTopDom && resizeObserver.observe(tableTopDom);
+    tableTopDom && tableElementResizeObserver.observe(tableTopDom);
 
     handleAddFormItems(3);
   });
@@ -312,9 +275,10 @@ export const app = function () {
 
 ### OPTIONS
 
-| 参数   | 说明                                                  | 类型   | 默认值                                              |
-| ------ | ----------------------------------------------------- | ------ | --------------------------------------------------- |
-| top    | 吸顶的时候 距离顶部多少距离，可以不用传递             | number | 不传递的话就是 el-table-header 节点距离 body 的距离 |
-| parent | 当前页面滚动的节点，如果是 document.body 可以不用传递 | string | body                                                |
+| 参数 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| top | 吸顶的时候 距离顶部多少距离，可以不用传递 | number | 不传递的话就是 按照当前距离固定 |
+| parent | 当前页面滚动的节点，如果是 document.body 可以不用传递 | string | body |
+| willBeChangeElementClasses | 会影响 tableHeader 到 body 顶部距离的 dom 节点(tableHeader 和 body 顶部之间高度会发生变化的 dom 节点，一般没有，动态表格、动态表单会存在这种情况) | string[] | [] |
 
 ---

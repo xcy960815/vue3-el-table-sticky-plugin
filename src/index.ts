@@ -1,13 +1,13 @@
-import type { App, DirectiveBinding, VNode } from "vue";
+import type { App, DirectiveBinding, VNode } from 'vue';
 
-import type { InstallOption } from "./type";
+import type { InstallOption, DirectiveBindingValue } from './type';
 
-import { TableSticky } from "./table-sticky";
+import { TableStickyPlugin } from './table-sticky-plugin';
 
 const install = (app: App, installOption?: InstallOption) => {
-  const tableSticky = new TableSticky();
+  const tableStickyPlugin = new TableStickyPlugin();
 
-  app.directive("sticky", {
+  app.directive('sticky', {
     /**
      * @desc 当被绑定的元素插入到DOM中
      * @param {HTMLElement} tableElement
@@ -16,25 +16,47 @@ const install = (app: App, installOption?: InstallOption) => {
      */
     mounted(
       tableElement: HTMLElement,
-      binding: DirectiveBinding<{ top: number; parent: string }>,
-      vnode: VNode
+      binding: DirectiveBinding<DirectiveBindingValue>,
+      vnode: VNode,
     ) {
-      tableSticky.mounted({ tableElement, binding, vnode, installOption });
+      tableStickyPlugin.mounted({
+        tableElement,
+        binding,
+        vnode,
+        installOption,
+      });
     },
+    /**
+     * @description 指令所在组件的 VNode 更新时调用
+     * @param tableElement {HTMLElement}
+     * @param binding  {{ top: number, parent: string }}
+     * @param vnode  {VNode}
+     */
     updated(
       tableElement: HTMLElement,
-      binding: DirectiveBinding<{ top: number; parent: string }>,
-      vnode: VNode
+      binding: DirectiveBinding<DirectiveBindingValue>,
+      vnode: VNode,
     ) {
-      tableSticky.updated({ tableElement, binding, vnode, installOption });
+      tableStickyPlugin.updated({
+        tableElement,
+        binding,
+        vnode,
+        installOption,
+      });
     },
-    unmounted(
-      tableElement: HTMLElement,
-      binding: DirectiveBinding<{ top: number; parent: string }>,
-      vnode: VNode
-    ) {
-      tableSticky.unmounted({ tableElement, binding, vnode, installOption });
-    },
+    // /**
+    //  * @description 指令所在组件的 VNode 及其子 VNode 全部更新后调用
+    //  * @param tableElement {HTMLElement}
+    //  * @param binding {{ top: number, parent: string }}
+    //  * @param vnode {VNode}
+    //  */
+    // unmounted(
+    //   tableElement: HTMLElement,
+    //   binding: DirectiveBinding<DirectiveBindingValue>,
+    //   vnode: VNode
+    // ) {
+    //   // tableSticky.unmounted({ tableElement, binding, vnode, installOption });
+    // },
   });
 };
 

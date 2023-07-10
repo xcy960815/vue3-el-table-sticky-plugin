@@ -11,31 +11,18 @@
     "jsx": "preserve",
     "noLib": false,
     "target": "es5",
-    "lib": [
-      "ESNext",
-      "DOM"
-    ],
+    "lib": ["ESNext", "DOM"],
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "@/*": ["src/*"]
     },
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "declaration": true,
-    "declarationDir": "./temp",
+    "declarationDir": "./temp"
   },
-  "exclude": [
-    "example",
-    "src"
-  ],
+  "exclude": ["example", "src"],
   "include": [],
-  "files": [
-    "src/index.ts",
-    "src/table-sticky.ts",
-    "src/type.ts",
-    "src/utils.ts"
-  ]
+  "files": ["src/index.ts", "src/table-sticky-plugin.ts", "src/type.ts", "src/utils.ts"]
 }

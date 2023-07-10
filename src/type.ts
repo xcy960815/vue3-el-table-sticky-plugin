@@ -1,63 +1,45 @@
-import type {
-  ComponentInternalInstance,
-  DirectiveBinding,
-  Ref,
-  VNode,
-} from "vue";
-type VNodeRef =
-  | string
-  | Ref
-  | ((ref: object | null, refs: Record<string, any>) => void);
+import type { ComponentInternalInstance, DirectiveBinding, Ref, VNode } from 'vue';
+
+type VNodeRef = string | Ref | ((ref: object | null, refs: Record<string, any>) => void);
+
+export interface DirectiveBindingValue {
+  top: number;
+  parent: string;
+  willBeChangeElementClasses: Array<string>;
+}
 export interface Option {
   tableElement: HTMLElement;
-  binding: StickyDirectiveBinding;
-  vnode?: VNode;
-  installOption?: InstallOption;
-  uploadType?: "init" | "update" | "watch";
+  binding: DirectiveBinding<DirectiveBindingValue>;
+  vnode: VNode;
+  installOption: InstallOption;
 }
-export interface TableStickyConfig
-  extends Record<
-    string,
-    | number
-    | { [P in keyof CSSStyleDeclaration]?: CSSStyleDeclaration[P] }
-    | EventListener
-    | HTMLElement
-    | ResizeObserver
-  > {
-  fixedTop: number;
-  tableInnerWapperElement: HTMLElement;
+export interface StickyConfig {
+  fixedTopValue: number;
   tableHeaderElement: HTMLElement;
   tableHeaderElementOriginalTop: number;
-  tableHeaderElementOriginalStyle: {
-    [P in Exclude<
-      keyof CSSStyleDeclaration,
-      Exclude<
-        keyof CSSStyleDeclaration,
-        "position" | "zIndex" | "top" | "transition"
-      >
-    >]: CSSStyleDeclaration[P];
-  };
+  tableHeaderElementOriginalStyle: Pick<
+    CSSStyleDeclaration,
+    'position' | 'zIndex' | 'top' | 'transition'
+  >;
+  tableInnerWapperElement: HTMLElement;
+  tableInnerWapperElementOriginalStyle: Pick<CSSStyleDeclaration, 'marginTop'>;
   tableBodyElement: HTMLElement;
-  tableInnerWapperElementOriginalStyle: {
-    [P in Exclude<
-      keyof CSSStyleDeclaration,
-      Exclude<keyof CSSStyleDeclaration, "marginTop">
-    >]: CSSStyleDeclaration[P];
-  };
   scrollElement: HTMLElement;
-  tableWidth: string;
-  scrollElementOnScroll: EventListener;
-  resizeObserver?: ResizeObserver;
+  tableElementOriginalWidth: string;
+  handleScrollElementOnScroll: EventListener;
+  tableElementResizeObserver?: ResizeObserver;
+  willChangeElementsOriginalHeight?: string[];
+  willChangeElementsResizeObserver?: ResizeObserver[];
 }
-export type TableStickyConfigs = Map<string, TableStickyConfig>;
-export type StickyDirectiveBinding = DirectiveBinding<{
-  parent: string;
-  top: number;
-}>;
-export type InstallOption = { parent?: string; top?: number };
 
-export type VNodeNormalizedRefAtom = {
+export interface StickyConfigs extends Map<string, StickyConfig> {}
+export interface InstallOption {
+  parent?: string;
+  top?: number;
+}
+
+export interface VNodeNormalizedRefAtom {
   i: ComponentInternalInstance;
   r: VNodeRef;
   f?: boolean;
-};
+}

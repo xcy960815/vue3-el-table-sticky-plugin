@@ -18,41 +18,25 @@
             </el-form>
             <el-table
               class="el-table-sticky"
-              v-sticky="{ top: stickyTopValue, parent: '.not-layout-page' }"
+              v-sticky="{
+                top: stickyTopValue,
+                parent: '.not-layout-page',
+                willBeChangeElementClasses: ['.table-top-dom'],
+              }"
               :data="tableDataState.tableData"
-              :header-cell-style="{ background: 'rgb(240, 240, 240)' }"
+              :header-cell-style="{ background: 'rgb(0, 0, 255)' }"
               border
               style="100%"
             >
-              <el-table-column
-                fixed="left"
-                prop="date"
-                label="Date"
-                width="150"
-              ></el-table-column>
-              <el-table-column
-                fixed="left"
-                prop="name"
-                label="Name"
-                width="250"
-              />
+              <el-table-column fixed="left" prop="date" label="Date" width="150"></el-table-column>
+              <el-table-column fixed="left" prop="name" label="Name" width="250" />
               <el-table-column prop="state" label="State" width="250" />
               <el-table-column prop="city" label="City" width="250" />
               <el-table-column prop="address" label="Address" width="620" />
-              <el-table-column
-                fixed="right"
-                prop="zip"
-                label="Zip"
-                width="120"
-              />
+              <el-table-column fixed="right" prop="zip" label="Zip" width="120" />
               <el-table-column fixed="right" label="操作" width="180">
                 <template #default>
-                  <el-button
-                    link
-                    type="primary"
-                    size="small"
-                    @click="handleAddFormItems(1)"
-                  >
+                  <el-button link type="primary" size="small" @click="handleAddFormItems(1)">
                     给表单添加一条数据
                   </el-button>
                 </template>
@@ -66,9 +50,8 @@
 </template>
 
 <script lang="ts" setup>
-import { app } from "./App";
-const { stickyTopValue, elFormItemsState, tableDataState, handleAddFormItems } =
-  app();
+import { app } from './App';
+const { stickyTopValue, elFormItemsState, tableDataState, handleAddFormItems } = app();
 </script>
 <style lang="less" scoped>
 .layout-main {
@@ -84,7 +67,7 @@ const { stickyTopValue, elFormItemsState, tableDataState, handleAddFormItems } =
     background-color: rgb(0, 21, 41);
     color: #fff;
     font-size: 16px;
-    font-family: "Courier New", Courier, monospace;
+    font-family: 'Courier New', Courier, monospace;
     font-weight: 600;
     text-align: center;
     line-height: 60px;
@@ -100,7 +83,7 @@ const { stickyTopValue, elFormItemsState, tableDataState, handleAddFormItems } =
       transition: all 0.4s ease 0s;
       color: #fff;
       font-size: 16px;
-      font-family: "Courier New", Courier, monospace;
+      font-family: 'Courier New', Courier, monospace;
       font-weight: 600;
       text-align: center;
       line-height: 60px;
@@ -114,42 +97,27 @@ const { stickyTopValue, elFormItemsState, tableDataState, handleAddFormItems } =
       display: flex;
       flex-direction: column;
 
-      .page-title {
-        width: 100%;
-        position: relative;
-        padding: 0.5em 10px;
-        border-bottom: 1px dashed #ccc;
-        margin-bottom: 1em;
-
-        h3 {
-          margin: 0;
-        }
-      }
-
       .page-content {
         padding: 0;
         overflow-y: auto;
         flex: 1;
         width: 100%;
-        // 增加底部的空白 可以滚动到底部
-        // padding-bottom: 100px;
 
         .not-layout-page {
           height: 100%;
           overflow-y: auto;
         }
         .table-top-dom {
+          box-sizing: border-box;
           padding: 10px;
-          width: 500px;
-          // position: sticky;
-          // top: 0px;
-          // z-index: 10;
+          width: 50%;
           background-color: #fcc630;
+          // overflow-anchor: none;
 
           :deep(.el-form-item__label) {
             color: #002ea6;
             font-weight: 600;
-            font-family: "MONACO";
+            font-family: 'MONACO';
           }
         }
       }

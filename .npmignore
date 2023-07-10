@@ -11,7 +11,8 @@ api-extractor.json
 /example
 
 vue.config.js
-
+.prettierrc
+.prettierrc.js
 tsconfig.json
 
 # local env files

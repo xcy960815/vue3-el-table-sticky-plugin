@@ -2,7 +2,7 @@ import type { App, DirectiveBinding, VNode } from 'vue';
 
 import type { InstallOption, DirectiveBindingValue } from './type';
 
-import { TableStickyPlugin } from './table-sticky-plugin';
+import { TableStickyPlugin } from './table-sticky';
 
 const install = (app: App, installOption?: InstallOption) => {
   const tableStickyPlugin = new TableStickyPlugin();

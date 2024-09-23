@@ -26,7 +26,7 @@
               :data="tableDataState.tableData"
               :header-cell-style="{ background: 'rgb(0, 0, 255)' }"
               border
-              style="100%"
+              style="height: 100%"
             >
               <el-table-column fixed="left" prop="date" label="Date" width="150"></el-table-column>
               <el-table-column fixed="left" prop="name" label="Name" width="250" />
@@ -50,8 +50,78 @@
 </template>
 
 <script lang="ts" setup>
-import { app } from './App';
-const { stickyTopValue, elFormItemsState, tableDataState, handleAddFormItems } = app();
+import { onMounted, reactive, ref } from 'vue';
+
+const stickyTopValue = ref<number>(0);
+const elFormItemsState = reactive<{
+  elFormItems: Array<{ label: string }>;
+}>({
+  elFormItems: [],
+});
+const tableDataState = reactive<{
+  tableData: Array<{
+    date: string;
+    name: string;
+    state: string;
+    city: string;
+    address: string;
+    zip: string;
+    tag: string;
+  }>;
+}>({
+  tableData: [],
+});
+// 模拟数据
+for (let index = 0; index < 49; index++) {
+  tableDataState.tableData.push({
+    date: '2016-05-03',
+    name: 'Tom',
+    state: 'California',
+    city: 'Los Angeles',
+    address: 'No. 189, Grove St, Los Angeles',
+    zip: 'CA 90036',
+    tag: 'Home',
+  });
+}
+tableDataState.tableData.unshift({
+  date: '第一条数据',
+  name: '第一条数据',
+  state: '第一条数据',
+  city: '第一条数据',
+  address: '第一条数据',
+  zip: '第一条数据',
+  tag: '第一条数据',
+});
+
+const handleAddFormItems = (formItemCount: number) => {
+  for (let index = 0; index < formItemCount; index++) {
+    elFormItemsState.elFormItems.push({ label: 'test-label' });
+  }
+};
+/**
+ * @desc 向表格中添加一条数据
+ */
+const handleAddTableData = () => {
+  tableDataState.tableData.push({
+    date: '添加的数据',
+    name: '添加的数据',
+    state: '添加的数据',
+    city: '添加的数据',
+    address: '添加的数据',
+    zip: '添加的数据',
+    tag: '添加的数据',
+  });
+};
+
+onMounted(() => {
+  // 监听节点class 为 table-top-dom 的高度变化
+  const tableTopDom = document.querySelector('.table-top-dom');
+  const targetElementTop = tableTopDom?.getBoundingClientRect().top;
+  stickyTopValue.value = targetElementTop || 0;
+  console.log('stickyTopValue', stickyTopValue.value);
+
+  handleAddFormItems(2);
+});
 </script>
 <style lang="less" scoped>
 .layout-main {
@@ -107,6 +177,7 @@ const { stickyTopValue, elFormItemsState, tableDataState, handleAddFormItems } =
           height: 100%;
           overflow-y: auto;
         }
+
         .table-top-dom {
           box-sizing: border-box;
           padding: 10px;

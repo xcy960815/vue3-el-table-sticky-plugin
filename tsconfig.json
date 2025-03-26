@@ -13,7 +13,7 @@
     "target": "es5",
     "lib": ["ESNext", "DOM"],
     "paths": {
-      "@/*": ["table-sticky-plugin/*"]
+      "@/*": ["plugin/*"]
     },
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
@@ -22,12 +22,7 @@
     "declaration": true,
     "declarationDir": "./temp"
   },
-  "exclude": ["src", "table-sticky-plugin"],
+  "exclude": ["src", "plugin"],
   "include": [],
-  "files": [
-    "table-sticky-plugin/index.ts",
-    "table-sticky-plugin/table-sticky.ts",
-    "table-sticky-plugin/type.ts",
-    "table-sticky-plugin/utils.ts"
-  ]
+  "files": ["plugin/index.ts", "plugin/table-sticky.ts", "plugin/type.ts", "plugin/utils.ts"]
 }

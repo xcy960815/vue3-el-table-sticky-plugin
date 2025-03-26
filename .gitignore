@@ -4,7 +4,6 @@ node_modules
 /public
 .browserslistrc
 package-lock.json
-rollup.config.js
 api-extractor.json
 
 temp/

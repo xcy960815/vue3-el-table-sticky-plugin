@@ -1,7 +1,7 @@
 import type { App } from 'vue';
 
 declare const _default: {
-  install: (app: App<any>, installOption?: InstallOption) => void;
+  install: (app: App<HTMLElement>, installOption?: InstallOption) => void;
 };
 export default _default;
 

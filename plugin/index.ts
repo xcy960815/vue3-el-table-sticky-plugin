@@ -4,7 +4,7 @@ import type { InstallOption, DirectiveBindingValue } from './type';
 
 import { TableStickyPlugin } from './table-sticky';
 
-const install = (app: App, installOption?: InstallOption) => {
+const install = (app: App<HTMLElement>, installOption?: InstallOption) => {
   const tableStickyPlugin = new TableStickyPlugin();
 
   app.directive('sticky', {

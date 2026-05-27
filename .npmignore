@@ -2,15 +2,17 @@
 node_modules
 /script
 /public
-/src
+/examples
 .browserslistrc
 package-lock.json
 pnpm-lock.yaml
 rollup.config.js
+rollup.config.mjs
 api-extractor.json
 /example
 
 vue.config.js
+vue.config.ts
 .prettierrc
 .prettierrc.js
 tsconfig.json

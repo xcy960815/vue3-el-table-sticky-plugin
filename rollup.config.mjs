@@ -1,25 +1,26 @@
 import progress from 'rollup-plugin-progress';
 import json from '@rollup/plugin-json';
 import postcss from 'rollup-plugin-postcss';
-import vue from '@vitejs/plugin-vue';
-import { terser } from 'rollup-plugin-terser';
+import terser from '@rollup/plugin-terser';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import typescript2 from 'rollup-plugin-typescript2';
 import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import { DEFAULT_EXTENSIONS } from '@babel/core';
-import livereload from 'rollup-plugin-livereload';
 import del from 'rollup-plugin-delete';
-import path from 'path';
+import { createRequire } from 'module';
 
-import alias from '@rollup/plugin-alias';
+const require = createRequire(import.meta.url);
+const pkg = require('./package.json');
+const autoprefixer = require('autoprefixer');
+
 // 判断是不是 生产环境
 const isDev = process.env.NODE_ENV !== 'production';
 
 // 初始化配置
 const initConfig = () => {
   return {
-    input: 'plugin/index.ts',
+    input: 'src/index.ts',
     output: [
       {
         file: 'dist/vue3-el-table-sticky-plugin.umd.js',
@@ -44,12 +45,16 @@ const initConfig = () => {
         del({
           targets: ['dist'],
         }),
-      vue(),
-
       typescript2({
         // 将根目录的tsconfig.json作为配置文件
         useTsconfigDeclarationDir: true,
         abortOnError: false,
+        include: ['**/*.ts', '**/*.tsx'],
+        tsconfigOverride: {
+          compilerOptions: {
+            moduleResolution: 'node',
+          },
+        },
       }),
 
       commonjs(),
@@ -62,7 +67,7 @@ const initConfig = () => {
       json(),
 
       postcss({
-        plugins: [require('autoprefixer')],
+        plugins: [autoprefixer],
         // 把 css 插入到 style 中
         inject: true,
         // 把 css 放到和js同一目录
@@ -80,7 +85,7 @@ const initConfig = () => {
         exclude: 'node_modules/**',
         babelHelpers: 'runtime',
         // babel 默认不支持 ts 需要手动添加
-        extensions: [...DEFAULT_EXTENSIONS, '.ts', '.tsx', '.vue'],
+        extensions: [...DEFAULT_EXTENSIONS, '.vue'],
       }),
 
       // 如果不是开发环境，开启压缩
@@ -88,10 +93,6 @@ const initConfig = () => {
         terser({
           toplevel: true,
         }),
-
-      // 热更新
-      // isDev && livereload(),
-
       // 显示打包过程 和 进度
       progress({
         clearLine: false, // default: true
@@ -108,9 +109,7 @@ const initConfig = () => {
     //     console.error(`(!) ${warning.message}`)
     // },
 
-    external: Object.keys(
-      require(path.resolve(__dirname, './package.json')).peerDependencies || {},
-    ),
+    external: Object.keys(pkg.peerDependencies || {}),
   };
 };
 

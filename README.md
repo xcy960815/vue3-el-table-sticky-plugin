@@ -26,9 +26,13 @@ npm i vue3-el-table-sticky-plugin -S
 
     2. top 可选参数 (参数优先级 指令使用处 > 指令注册处 > 插件兜底(基于当前table-header距离body的top值))
 
-    3. willBeChangeElementClasses 可选参数 (参数优先级 指令使用处 > 指令注册处
+    3. willBeChangeElementClasses 可选参数 (参数优先级 指令使用处 > 指令注册处 > 插件兜底([]))
 
-    4. 实际使用情况还会更复杂 本插件只是在理想状态下面做的封装 如有不足还请指出
+    4. parent 和 willBeChangeElementClasses 使用选择器字符串，选择器不存在时插件会跳过当前监听，并在开发环境输出 warning，不会阻断页面渲染。
+
+    5. 多个 el-table 可以同时使用 v-sticky，插件会按表格实例隔离状态。
+
+    6. 实际使用情况还会更复杂 本插件只是在理想状态下面做的封装 如有不足还请指出
 
 #### 引入
 
@@ -277,8 +281,10 @@ export const app = function () {
 
 | 参数 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
-| top | 吸顶的时候 距离顶部多少距离，可以不用传递 | number | 不传递的话就是 按照当前距离固定 |
-| parent | 当前页面滚动的节点，如果是 document.body 可以不用传递 | string | body |
-| willBeChangeElementClasses | 会影响 tableHeader 到 body 顶部距离的 dom 节点(tableHeader 和 body 顶部之间高度会发生变化的 dom 节点，一般没有，动态表格、动态表单会存在这种情况) | string[] | [] |
+| top | 可选。吸顶时距离视口顶部的距离；不传时按当前表头距离顶部的位置计算 | number | 当前表头距离顶部的位置 |
+| parent | 可选。当前页面滚动容器选择器；不传时使用 body | string | body |
+| willBeChangeElementClasses | 可选。会影响 tableHeader 到顶部距离的 DOM 节点选择器数组；这些节点高度变化时会重新计算吸顶位置 | string[] | [] |
+
+> 说明：`parent` 和 `willBeChangeElementClasses` 都使用选择器字符串。选择器不存在时，插件会在开发环境输出 warning 并跳过对应监听，避免页面直接报错。
 
 ---

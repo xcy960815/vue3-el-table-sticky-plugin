@@ -16,7 +16,7 @@ const install = (app: App<HTMLElement>, installOption?: InstallOption) => {
      */
     mounted(
       tableElement: HTMLElement,
-      binding: DirectiveBinding<DirectiveBindingValue>,
+      binding: DirectiveBinding<DirectiveBindingValue | undefined>,
       vnode: VNode,
     ) {
       tableStickyPlugin.mounted({
@@ -34,7 +34,7 @@ const install = (app: App<HTMLElement>, installOption?: InstallOption) => {
      */
     updated(
       tableElement: HTMLElement,
-      binding: DirectiveBinding<DirectiveBindingValue>,
+      binding: DirectiveBinding<DirectiveBindingValue | undefined>,
       vnode: VNode,
     ) {
       tableStickyPlugin.updated({
@@ -52,7 +52,7 @@ const install = (app: App<HTMLElement>, installOption?: InstallOption) => {
      */
     unmounted(
       tableElement: HTMLElement,
-      binding: DirectiveBinding<DirectiveBindingValue>,
+      binding: DirectiveBinding<DirectiveBindingValue | undefined>,
       vnode: VNode,
     ) {
       tableStickyPlugin.unmounted({ tableElement, binding, vnode, installOption });

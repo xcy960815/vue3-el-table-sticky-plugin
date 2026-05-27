@@ -1,3 +1,80 @@
+export interface CancelableFunction<A extends any[] = any[]> {
+  (...args: A): void;
+  cancel: () => void;
+}
+
+export function createDebounced<A extends any[]>(
+  fn: (...args: A) => void,
+  delay: number,
+): CancelableFunction<A> {
+  let timer: ReturnType<typeof setTimeout> | null = null;
+
+  const debounced = (...args: A) => {
+    if (timer) clearTimeout(timer);
+
+    timer = setTimeout(() => {
+      timer = null;
+      fn(...args);
+    }, delay);
+  };
+
+  debounced.cancel = () => {
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+  };
+
+  return debounced;
+}
+
+export function createThrottled<A extends any[]>(
+  fn: (...args: A) => void,
+  delay: number,
+): CancelableFunction<A> {
+  let lastCalledAt = 0;
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  let lastArgs: A | null = null;
+
+  const throttled = (...args: A) => {
+    const now = Date.now();
+    const remaining = delay - (now - lastCalledAt);
+    lastArgs = args;
+
+    if (remaining <= 0) {
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+      lastCalledAt = now;
+      fn(...args);
+      lastArgs = null;
+      return;
+    }
+
+    if (!timer) {
+      timer = setTimeout(() => {
+        timer = null;
+        lastCalledAt = Date.now();
+        if (lastArgs) {
+          fn(...lastArgs);
+          lastArgs = null;
+        }
+      }, remaining);
+    }
+  };
+
+  throttled.cancel = () => {
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+    lastArgs = null;
+  };
+
+  return throttled;
+}
+
 /**
  * @desc 防抖装饰器
  * @param delay {number}
@@ -10,7 +87,7 @@ export function Debounce(delay: number, immediate: boolean = false) {
     _propertyKey: string | symbol,
     descriptor: TypedPropertyDescriptor<(...args: A) => R>,
   ) {
-    let timer: NodeJS.Timeout | null = null;
+    let timer: ReturnType<typeof setTimeout> | null = null;
     const originalMethod = descriptor.value!;
 
     let allowCallNow: boolean = immediate;
@@ -52,7 +129,7 @@ export function Throttle(delay: number, leading: boolean = true) {
     descriptor: TypedPropertyDescriptor<(...args: A) => R>,
   ) {
     let previous = 0;
-    let timer: NodeJS.Timeout | null = null;
+    let timer: ReturnType<typeof setTimeout> | null = null;
     const originalMethod = descriptor.value!;
 
     descriptor.value = function (this: ThisParameterType<(...args: A) => R>, ...args: A) {
@@ -62,7 +139,7 @@ export function Throttle(delay: number, leading: boolean = true) {
         previous = now;
         return result;
       } else if (now - previous > delay) {
-        clearTimeout(timer as NodeJS.Timeout);
+        clearTimeout(timer as ReturnType<typeof setTimeout>);
         timer = setTimeout(() => {
           const result = originalMethod.apply(this, args);
           previous = Date.now();

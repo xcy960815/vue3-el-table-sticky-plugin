@@ -2,27 +2,25 @@
   "compilerOptions": {
     "isolatedModules": true,
     "skipLibCheck": true,
-    "baseUrl": ".",
     "module": "esnext",
+    "moduleResolution": "node",
     "noImplicitAny": false,
     "removeComments": true,
-    "moduleResolution": "node",
     "esModuleInterop": true,
     "jsx": "preserve",
     "noLib": false,
-    "target": "es5",
+    "target": "ES2015",
     "lib": ["ESNext", "DOM"],
     "paths": {
-      "@/*": ["plugin/*"]
+      "@/*": ["./src/*"]
     },
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
     "declaration": true,
     "declarationDir": "./temp"
   },
-  "exclude": ["src", "plugin"],
+  "exclude": ["examples"],
   "include": [],
-  "files": ["plugin/index.ts", "plugin/table-sticky.ts", "plugin/type.ts", "plugin/utils.ts"]
+  "files": ["src/index.ts", "src/table-sticky.ts", "src/type.ts", "src/utils.ts"]
 }

@@ -2,9 +2,9 @@
 node_modules
 /dist
 /public
+.pnpm-store
 .browserslistrc
 package-lock.json
-api-extractor.json
 
 temp/
 

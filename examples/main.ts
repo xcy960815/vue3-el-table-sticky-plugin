@@ -1,7 +1,7 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import './App.css';
-import Vue3TableStickyPlugin from '../table-sticky-plugin/index';
+import Vue3TableStickyPlugin from '../src/index';
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
 const app = createApp(App);

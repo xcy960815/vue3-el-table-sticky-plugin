@@ -16,12 +16,12 @@
                 <el-input placeholder="Approved by" />
               </el-form-item>
             </el-form>
-            <!-- willBeChangeElementClasses: ['.table-top-dom'], -->
             <el-table
               class="el-table-sticky"
               v-sticky="{
                 top: stickyTopValue,
                 parent: '.not-layout-page',
+                willBeChangeElementClasses: ['.table-top-dom'],
               }"
               :data="tableDataState.tableData"
               :header-cell-style="{ background: 'rgb(0, 0, 255)' }"
@@ -41,6 +41,25 @@
                   </el-button>
                 </template>
               </el-table-column>
+            </el-table>
+            <el-table
+              class="el-table-sticky secondary-table"
+              v-sticky="{
+                top: stickyTopValue,
+                parent: '.not-layout-page',
+                willBeChangeElementClasses: ['.table-top-dom'],
+              }"
+              :data="tableDataState.tableData.slice(0, 8)"
+              :header-cell-style="{ background: 'rgb(34, 139, 34)' }"
+              border
+              style="height: 300px"
+            >
+              <el-table-column fixed="left" prop="date" label="Date" width="150"></el-table-column>
+              <el-table-column fixed="left" prop="name" label="Name" width="250" />
+              <el-table-column prop="state" label="State" width="250" />
+              <el-table-column prop="city" label="City" width="250" />
+              <el-table-column prop="address" label="Address" width="620" />
+              <el-table-column fixed="right" prop="zip" label="Zip" width="120" />
             </el-table>
           </div>
         </el-main>
@@ -176,6 +195,10 @@ onMounted(() => {
         .not-layout-page {
           height: 100%;
           overflow-y: auto;
+        }
+
+        .secondary-table {
+          margin-top: 24px;
         }
 
         .table-top-dom {

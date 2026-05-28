@@ -21,7 +21,7 @@
         :data="tableData"
         :header-cell-style="{ background: headerColor }"
         border
-        :style="{ height: tableHeight }"
+        :style="tableStyle"
       >
         <el-table-column fixed="left" prop="date" label="Date" width="150" />
         <el-table-column fixed="left" prop="name" label="Name" width="250" />
@@ -36,13 +36,13 @@
         </el-table-column>
       </el-table>
 
-      <slot :table-data="tableData" />
+      <slot :sticky-options="stickyOptions" :table-data="tableData" />
     </div>
   </section>
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, reactive, ref } from 'vue';
+import { computed, nextTick, onMounted, reactive, ref } from 'vue';
 
 interface TableRow {
   date: string;
@@ -67,7 +67,7 @@ const props = withDefaults(
   {
     parentSelector: '',
     scrollClass: 'not-layout-page',
-    tableHeight: '100%',
+    tableHeight: '',
     headerColor: 'rgb(0, 0, 255)',
     showToolbar: true,
   },
@@ -82,6 +82,10 @@ const stickyOptions = computed(() => ({
   parent: props.parentSelector || undefined,
   willBeChangeElementClasses: props.showToolbar ? ['.table-top-dom'] : [],
 }));
+
+const tableStyle = computed(() => {
+  return props.tableHeight ? { height: props.tableHeight } : undefined;
+});
 
 for (let index = 0; index < 49; index++) {
   tableData.push(createRow('2016-05-03'));
@@ -107,7 +111,9 @@ function addFormItems(formItemCount: number) {
       label: 'test-label',
     });
   }
-  requestAnimationFrame(refreshTop);
+  void nextTick(() => {
+    requestAnimationFrame(refreshTop);
+  });
 }
 
 function addTableRow() {
@@ -119,8 +125,8 @@ function refreshTop() {
   stickyTopValue.value = topElement?.getBoundingClientRect().top || 0;
 }
 
-onMounted(() => {
-  refreshTop();
+onMounted(async () => {
+  await nextTick();
   addFormItems(2);
 });
 </script>

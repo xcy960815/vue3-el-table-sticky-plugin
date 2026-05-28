@@ -1,290 +1,210 @@
-<p align="center" >
-<font size="5">vue3-el-table-sticky-plugin</font>
-</p>
-<br/>
+# vue3-el-table-sticky-plugin
 
-[![npm](https://img.shields.io/npm/v/vue3-el-table-sticky-plugin.svg)](https://www.npmjs.com/package/vue3-el-table-sticky-plugin) [![npm](https://img.shields.io/npm/dw/vue3-el-table-sticky-plugin.svg)](https://npmtrends.com/vue3-el-table-sticky-plugin) [![npm](https://img.shields.io/npm/l/vue3-el-table-sticky-plugin.svg?sanitize=true)](https://www.npmjs.com/package/vue3-el-table-sticky-plugin) [![vue3](https://img.shields.io/badge/vue-3.x-brightgreen.svg)](https://vuejs.org/) [![vue3](https://img.shields.io/badge/vue--cli-4.x-brightgreen.svg)](https://cli.vuejs.org/)
+[English](./README.md) | [简体中文](./README.zh-CN.md)
 
-<br/>
-> 一个让 element-plus el-table 表头部吸顶的vue3插件
+[![npm](https://img.shields.io/npm/v/vue3-el-table-sticky-plugin.svg)](https://www.npmjs.com/package/vue3-el-table-sticky-plugin) [![downloads](https://img.shields.io/npm/dw/vue3-el-table-sticky-plugin.svg)](https://npmtrends.com/vue3-el-table-sticky-plugin) [![license](https://img.shields.io/npm/l/vue3-el-table-sticky-plugin.svg)](https://www.npmjs.com/package/vue3-el-table-sticky-plugin) [![vue](https://img.shields.io/badge/vue-3.x-brightgreen.svg)](https://vuejs.org/) [![element--plus](https://img.shields.io/badge/element--plus-2.x-blue.svg)](https://element-plus.org/)
 
-<br/>
+让 Element Plus `el-table` 表头在页面或业务滚动容器中吸顶的 Vue 3 指令插件。
 
-#### 实现思路
+## Features
 
-节点中设置的 top 值是基于 body 进行设置的因为业务场景不一样，所有节点唯一的共同点就是 body。
+- 支持 `el-table` 表头吸顶，不侵入表格数据和列配置。
+- 支持页面默认滚动容器，也支持指定业务滚动容器。
+- 支持多个表格实例同时使用，状态按表格隔离。
+- 支持监听外部区域高度变化后重新计算吸顶位置。
+- 自动处理挂载、更新、卸载时的事件和 `ResizeObserver` 清理。
+- 提供 TypeScript 类型声明。
 
-#### 安装
+## Requirements
 
-```npm
-npm i vue3-el-table-sticky-plugin -S
+- Vue `^3.2.13`
+- Element Plus `2.x`
+- Node `^20.19.0 || >=22.12.0` 用于本仓库开发和构建
+
+## Install
+
+```bash
+npm install vue3-el-table-sticky-plugin
 ```
 
-#### 使用前注意
+```bash
+pnpm add vue3-el-table-sticky-plugin
+```
 
-    1. parent 滚动容器，默认为body。(参数优先级 指令使用处 > 指令注册处 > 插件兜底(body节点))
-
-    2. top 可选参数 (参数优先级 指令使用处 > 指令注册处 > 插件兜底(基于当前table-header距离body的top值))
-
-    3. willBeChangeElementClasses 可选参数 (参数优先级 指令使用处 > 指令注册处 > 插件兜底([]))
-
-    4. parent 和 willBeChangeElementClasses 使用选择器字符串，选择器不存在时插件会跳过当前监听，并在开发环境输出 warning，不会阻断页面渲染。
-
-    5. 多个 el-table 可以同时使用 v-sticky，插件会按表格实例隔离状态。
-
-    6. 实际使用情况还会更复杂 本插件只是在理想状态下面做的封装 如有不足还请指出
-
-#### 引入
+## Quick Start
 
 ```ts
-// main.ts
 import { createApp } from 'vue';
-import App from './App.vue';
+import ElementPlus from 'element-plus';
+import 'element-plus/dist/index.css';
 import Vue3TableStickyPlugin from 'vue3-el-table-sticky-plugin';
+
+import App from './App.vue';
+
 const app = createApp(App);
-// 注入全局指令
+
+app.use(ElementPlus);
 app.use(Vue3TableStickyPlugin);
 app.mount('#app');
 ```
 
-#### 使用
+Then use `v-sticky` on `el-table`:
 
-```html
-<!-- xxx.vue -->
+```vue
 <template>
-  <el-container class="layout-main">
-    <el-header>头部导航栏</el-header>
-    <el-container class="layout-body">
-      <el-aside class="layout-aside"> 左侧菜单栏 </el-aside>
-      <el-main class="layout-page">
-        <el-main class="page-content">
-          <!-- 因为这个只是开发测试demo 所以就写在一个文件里面 就行本人喜欢将固定的滚动写在layout布局里面 极端场景会将滚动写在具体的业务 .vue文件的根节点上 -->
-          <!-- 业务 .vue文件的根节点 -->
-          <div class="not-layout-page">
-            <el-form inline class="table-top-dom">
-              <el-form-item
-                :label="formItem.label"
-                v-for="formItem in elFormItemsState.elFormItems"
-              >
-                <el-input placeholder="Approved by" />
-              </el-form-item>
-            </el-form>
-            <el-table
-              class="el-table-sticky"
-              v-sticky="{
-                top: stickyTopValue,
-                parent: '.not-layout-page',
-                willBeChangeElementClasses: ['.table-top-dom'],
-              }"
-              :data="tableDataState.tableData"
-              :header-cell-style="{ background: 'rgb(0, 0, 255)' }"
-              border
-              style="100%"
-            >
-              <el-table-column fixed="left" prop="date" label="Date" width="150"></el-table-column>
-              <el-table-column fixed="left" prop="name" label="Name" width="250" />
-              <el-table-column prop="state" label="State" width="250" />
-              <el-table-column prop="city" label="City" width="250" />
-              <el-table-column prop="address" label="Address" width="620" />
-              <el-table-column fixed="right" prop="zip" label="Zip" width="120" />
-              <el-table-column fixed="right" label="操作" width="180">
-                <template #default>
-                  <el-button link type="primary" size="small" @click="handleAddFormItems(1)">
-                    给表单添加一条数据
-                  </el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-          </div>
-        </el-main>
-      </el-main>
-    </el-container>
-  </el-container>
+  <div class="page-scroll">
+    <div class="toolbar">
+      <!-- filters, actions, dynamic content -->
+    </div>
+
+    <el-table
+      v-sticky="{
+        top: 0,
+        parent: '.page-scroll',
+        willBeChangeElementClasses: ['.toolbar'],
+      }"
+      :data="tableData"
+      border
+    >
+      <el-table-column prop="date" label="Date" width="180" />
+      <el-table-column prop="name" label="Name" width="180" />
+      <el-table-column prop="address" label="Address" />
+    </el-table>
+  </div>
 </template>
 
-<script lang="ts" setup>
-  import { app } from './App';
-  const { stickyTopValue, elFormItemsState, tableDataState, handleAddFormItems } = app();
+<script setup lang="ts">
+const tableData = [
+  {
+    date: '2016-05-03',
+    name: 'Tom',
+    address: 'No. 189, Grove St, Los Angeles',
+  },
+];
 </script>
-<style lang="less" scoped>
-  .layout-main {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    flex-basis: auto;
-    box-sizing: border-box;
 
-    .el-header {
-      background-color: rgb(0, 21, 41);
-      color: #fff;
-      font-size: 16px;
-      font-family: 'Courier New', Courier, monospace;
-      font-weight: 600;
-      text-align: center;
-      line-height: 60px;
-    }
-
-    .layout-body {
-      display: flex;
-      overflow: hidden;
-
-      .layout-aside {
-        width: 200px;
-        background-color: rgb(0, 21, 41);
-        transition: all 0.4s ease 0s;
-        color: #fff;
-        font-size: 16px;
-        font-family: 'Courier New', Courier, monospace;
-        font-weight: 600;
-        text-align: center;
-        line-height: 60px;
-      }
-
-      .layout-page {
-        overflow: hidden;
-        --el-main-padding: 10px;
-        padding: var(--el-main-padding);
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-
-        .page-content {
-          padding: 0;
-          overflow-y: auto;
-          flex: 1;
-          width: 100%;
-
-          .not-layout-page {
-            height: 100%;
-            overflow-y: auto;
-          }
-          .table-top-dom {
-            box-sizing: border-box;
-            padding: 10px;
-            width: 50%;
-            background-color: #fcc630;
-            // overflow-anchor: none;
-
-            :deep(.el-form-item__label) {
-              color: #002ea6;
-              font-weight: 600;
-              font-family: 'MONACO';
-            }
-          }
-        }
-
-        .page-footer {
-          width: 100%;
-          // background-color: #ccc;
-          padding: 0.5em 10px;
-          border-top: 1px dashed #ccc;
-          border-bottom: 1px dashed #ccc;
-        }
-      }
-    }
-  }
+<style scoped>
+.page-scroll {
+  height: 100%;
+  overflow-y: auto;
+}
 </style>
 ```
 
+## Options
+
+`v-sticky` accepts an object:
+
 ```ts
-// app.ts
-import { onMounted, reactive, ref } from 'vue';
-
-export const app = function () {
-  const stickyTopValue = ref<number>(0);
-  const elFormItemsState = reactive<{
-    elFormItems: Array<{ label: string }>;
-  }>({
-    elFormItems: [],
-  });
-  const tableDataState = reactive<{
-    tableData: Array<{
-      date: string;
-      name: string;
-      state: string;
-      city: string;
-      address: string;
-      zip: string;
-      tag: string;
-    }>;
-  }>({
-    tableData: [],
-  });
-  // 模拟数据
-  for (let index = 0; index < 49; index++) {
-    tableDataState.tableData.push({
-      date: '2016-05-03',
-      name: 'Tom',
-      state: 'California',
-      city: 'Los Angeles',
-      address: 'No. 189, Grove St, Los Angeles',
-      zip: 'CA 90036',
-      tag: 'Home',
-    });
-  }
-  tableDataState.tableData.unshift({
-    date: '第一条数据',
-    name: '第一条数据',
-    state: '第一条数据',
-    city: '第一条数据',
-    address: '第一条数据',
-    zip: '第一条数据',
-    tag: '第一条数据',
-  });
-
-  const handleAddFormItems = (formItemCount: number) => {
-    for (let index = 0; index < formItemCount; index++) {
-      elFormItemsState.elFormItems.push({ label: 'test-label' });
-    }
-  };
-
-  const handleAddTableData = () => {
-    tableDataState.tableData.push({
-      date: '添加的数据',
-      name: '添加的数据',
-      state: '添加的数据',
-      city: '添加的数据',
-      address: '添加的数据',
-      zip: '添加的数据',
-      tag: '添加的数据',
-    });
-  };
-  onMounted(() => {
-    // 监听节点class 为 table-top-dom 的高度变化
-    const tableTopDom = document.querySelector('.table-top-dom');
-    const tableElementResizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const targetElement = entry.target as HTMLDivElement;
-        stickyTopValue.value = targetElement.getBoundingClientRect().top;
-      }
-    });
-    tableTopDom && tableElementResizeObserver.observe(tableTopDom);
-
-    handleAddFormItems(3);
-  });
-
-  return {
-    stickyTopValue,
-    elFormItemsState,
-    tableDataState,
-    handleAddTableData,
-    handleAddFormItems,
-  };
-};
+interface StickyOptions {
+  top?: number;
+  parent?: string;
+  willBeChangeElementClasses?: string[];
+}
 ```
 
-#### 可把上述代码复制到自己项目里面试试
-
-### OPTIONS
-
-| 参数 | 说明 | 类型 | 默认值 |
+| Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| top | 可选。吸顶时距离视口顶部的距离；不传时按当前表头距离顶部的位置计算 | number | 当前表头距离顶部的位置 |
-| parent | 可选。当前页面滚动容器选择器；不传时使用 body | string | body |
-| willBeChangeElementClasses | 可选。会影响 tableHeader 到顶部距离的 DOM 节点选择器数组；这些节点高度变化时会重新计算吸顶位置 | string[] | [] |
+| `top` | `number` | Current table header top | Fixed header offset from the viewport top. |
+| `parent` | `string` | `body` | CSS selector of the scroll container. |
+| `willBeChangeElementClasses` | `string[]` | `[]` | CSS selectors for elements whose size changes should trigger layout recalculation. |
 
-> 说明：`parent` 和 `willBeChangeElementClasses` 都使用选择器字符串。选择器不存在时，插件会在开发环境输出 warning 并跳过对应监听，避免页面直接报错。
+Priority:
 
----
+1. Directive value, for example `v-sticky="{ top: 64 }"`.
+2. Plugin install option, for example `app.use(Vue3TableStickyPlugin, { top: 64 })`.
+3. Plugin fallback.
+
+## Global Defaults
+
+You can provide default options when installing the plugin:
+
+```ts
+app.use(Vue3TableStickyPlugin, {
+  top: 64,
+  parent: '.app-main',
+});
+```
+
+Directive options override global defaults:
+
+```vue
+<el-table
+  v-sticky="{
+    top: 0,
+    parent: '.page-scroll',
+  }"
+/>
+```
+
+## Scroll Container Rules
+
+The plugin listens to the configured scroll container. The table must be inside that container, and that same container must be the element that actually scrolls.
+
+Recommended:
+
+```css
+.page-scroll {
+  height: 100%;
+  overflow-y: auto;
+}
+```
+
+Avoid testing a parent scroll case with a fixed-height `el-table` if your goal is to verify outer container scrolling. Element Plus will make the table body scroll internally when `height` is set, while this plugin is listening to the configured parent.
+
+## Demo Routes
+
+This repository includes a Vite demo with one test case per route:
+
+| Route              | Case                                                       |
+| ------------------ | ---------------------------------------------------------- |
+| `/#/basic-body`    | Default body scroll behavior.                              |
+| `/#/parent-scroll` | Custom parent scroll container.                            |
+| `/#/multi-table`   | Multiple sticky tables in the same scroll container.       |
+| `/#/dynamic-top`   | Recalculate sticky position when a toolbar changes height. |
+
+Run the demo:
+
+```bash
+pnpm install
+pnpm dev
+```
+
+## Project Structure
+
+```text
+plugin/     Source code published as the plugin
+src/        Vite demo app
+types/      Bundled TypeScript declarations
+dist/       Library build output
+```
+
+## Scripts
+
+```bash
+pnpm dev            # Start the Vite demo
+pnpm build          # Build the plugin package
+pnpm build:plugin   # Build plugin JS and declaration files
+pnpm build:demo     # Build the demo app
+pnpm lint           # Run ESLint
+pnpm format:check   # Check Prettier formatting
+```
+
+## Build Output
+
+The package exposes:
+
+- `dist/vue3-el-table-sticky-plugin.esm.js`
+- `dist/vue3-el-table-sticky-plugin.umd.js`
+- `types/vue3-el-table-sticky-plugin.d.ts`
+
+## Notes
+
+- `parent` and `willBeChangeElementClasses` are CSS selectors.
+- Invalid selectors are ignored with a console warning.
+- Missing optional watched elements do not block rendering.
+- The plugin adds and removes the `fixed` class on the Element Plus table header wrapper while sticky is active.
+
+## License
+
+MIT

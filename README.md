@@ -59,9 +59,10 @@ Then use `v-sticky` on `el-table`:
 
     <el-table
       v-sticky="{
-        top: 0,
-        parent: '.page-scroll',
-        willBeChangeElementClasses: ['.toolbar'],
+        offsetTop: 0,
+        scrollTarget: '.page-scroll',
+        observe: ['.toolbar'],
+        boundary: 'table',
       }"
       :data="tableData"
       border
@@ -97,22 +98,40 @@ const tableData = [
 
 ```ts
 interface StickyOptions {
+  offsetTop?: number | (() => number);
+  scrollTarget?: string | HTMLElement | Window;
+  boundary?: 'table' | 'scroll-container' | string | HTMLElement;
+  observe?: Array<string | HTMLElement>;
+  strategy?: 'auto' | 'fixed' | 'sticky';
+  zIndex?: number | 'auto';
+  activeClass?: string;
+
+  /** @deprecated Use offsetTop instead. */
   top?: number;
+  /** @deprecated Use scrollTarget instead. */
   parent?: string;
+  /** @deprecated Use observe instead. */
   willBeChangeElementClasses?: string[];
 }
 ```
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `top` | `number` | Current table header top | Fixed header offset from the viewport top. |
-| `parent` | `string` | `body` | CSS selector of the scroll container. |
-| `willBeChangeElementClasses` | `string[]` | `[]` | CSS selectors for elements whose size changes should trigger layout recalculation. |
+| `offsetTop` | `number \| (() => number)` | Current table header top | Sticky offset from the active scroll viewport top. |
+| `scrollTarget` | `string \| HTMLElement \| Window` | Nearest scroll parent, then window | Scroll container used for sticky calculations. |
+| `boundary` | `'table' \| 'scroll-container' \| string \| HTMLElement` | `'table'` | Boundary that releases the sticky header when its bottom is reached. |
+| `observe` | `Array<string \| HTMLElement>` | `[]` | Elements whose size changes should trigger layout recalculation. |
+| `strategy` | `'auto' \| 'fixed' \| 'sticky'` | `'auto'` | Reserved strategy option; current engine renders with fixed positioning. |
+| `zIndex` | `number \| 'auto'` | `'auto'` | Sticky header stacking order. |
+| `activeClass` | `string` | `'fixed'` | Class added while sticky is active. |
+| `top` | `number` | - | Deprecated alias of `offsetTop`. |
+| `parent` | `string` | - | Deprecated alias of `scrollTarget`. |
+| `willBeChangeElementClasses` | `string[]` | - | Deprecated alias of `observe`. |
 
 Priority:
 
-1. Directive value, for example `v-sticky="{ top: 64 }"`.
-2. Plugin install option, for example `app.use(Vue3TableStickyPlugin, { top: 64 })`.
+1. Directive value, for example `v-sticky="{ offsetTop: 64 }"`.
+2. Plugin install option, for example `app.use(Vue3TableStickyPlugin, { offsetTop: 64 })`.
 3. Plugin fallback.
 
 ## Global Defaults
@@ -121,8 +140,8 @@ You can provide default options when installing the plugin:
 
 ```ts
 app.use(Vue3TableStickyPlugin, {
-  top: 64,
-  parent: '.app-main',
+  offsetTop: 64,
+  scrollTarget: '.app-main',
 });
 ```
 
@@ -131,15 +150,15 @@ Directive options override global defaults:
 ```vue
 <el-table
   v-sticky="{
-    top: 0,
-    parent: '.page-scroll',
+    offsetTop: 0,
+    scrollTarget: '.page-scroll',
   }"
 />
 ```
 
 ## Scroll Container Rules
 
-The plugin listens to the configured scroll container. The table must be inside that container, and that same container must be the element that actually scrolls.
+The plugin listens to the configured scroll container. The table must be inside that container, and that same container must be the element that actually scrolls. If `scrollTarget` is omitted, the plugin searches for the nearest scrollable ancestor and falls back to the window.
 
 Recommended:
 
@@ -200,7 +219,8 @@ The package exposes:
 
 ## Notes
 
-- `parent` and `willBeChangeElementClasses` are CSS selectors.
+- `scrollTarget`, `boundary`, and `observe` support CSS selectors where a selector is accepted.
+- `parent` and `willBeChangeElementClasses` remain available as deprecated compatibility aliases.
 - Invalid selectors are ignored with a console warning.
 - Missing optional watched elements do not block rendering.
 - The plugin adds and removes the `fixed` class on the Element Plus table header wrapper while sticky is active.

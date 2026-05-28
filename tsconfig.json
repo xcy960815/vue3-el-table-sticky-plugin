@@ -23,13 +23,6 @@
     "noEmit": true
   },
   "exclude": [],
-  "include": ["src/**/*.vue"],
-  "files": [
-    "plugin/index.ts",
-    "plugin/table-sticky.ts",
-    "plugin/type.ts",
-    "plugin/utils.ts",
-    "src/main.ts",
-    "src/shims-vue.d.ts"
-  ]
+  "files": ["src/main.ts", "src/shims-vue.d.ts"],
+  "include": ["src/**/*.vue", "plugin/**/*.ts"]
 }

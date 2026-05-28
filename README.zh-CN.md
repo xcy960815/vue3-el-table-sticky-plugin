@@ -59,9 +59,10 @@ app.mount('#app');
 
     <el-table
       v-sticky="{
-        top: 0,
-        parent: '.page-scroll',
-        willBeChangeElementClasses: ['.toolbar'],
+        offsetTop: 0,
+        scrollTarget: '.page-scroll',
+        observe: ['.toolbar'],
+        boundary: 'table',
       }"
       :data="tableData"
       border
@@ -97,22 +98,40 @@ const tableData = [
 
 ```ts
 interface StickyOptions {
+  offsetTop?: number | (() => number);
+  scrollTarget?: string | HTMLElement | Window;
+  boundary?: 'table' | 'scroll-container' | string | HTMLElement;
+  observe?: Array<string | HTMLElement>;
+  strategy?: 'auto' | 'fixed' | 'sticky';
+  zIndex?: number | 'auto';
+  activeClass?: string;
+
+  /** @deprecated 请使用 offsetTop。 */
   top?: number;
+  /** @deprecated 请使用 scrollTarget。 */
   parent?: string;
+  /** @deprecated 请使用 observe。 */
   willBeChangeElementClasses?: string[];
 }
 ```
 
 | 参数 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `top` | `number` | 当前表头距离视口顶部的位置 | 表头吸顶后距离视口顶部的距离。 |
-| `parent` | `string` | `body` | 滚动容器的 CSS 选择器。 |
-| `willBeChangeElementClasses` | `string[]` | `[]` | 会影响吸顶位置的元素选择器列表；这些元素尺寸变化时会触发布局重算。 |
+| `offsetTop` | `number \| (() => number)` | 当前表头距离视口顶部的位置 | 表头吸顶后距离当前滚动视口顶部的距离。 |
+| `scrollTarget` | `string \| HTMLElement \| Window` | 最近可滚动祖先，其次是 window | 用于吸顶计算的滚动容器。 |
+| `boundary` | `'table' \| 'scroll-container' \| string \| HTMLElement` | `'table'` | 触达底部后释放吸顶表头的边界元素。 |
+| `observe` | `Array<string \| HTMLElement>` | `[]` | 会影响吸顶位置的元素列表；这些元素尺寸变化时会触发布局重算。 |
+| `strategy` | `'auto' \| 'fixed' \| 'sticky'` | `'auto'` | 预留策略配置；当前引擎使用 fixed 定位渲染。 |
+| `zIndex` | `number \| 'auto'` | `'auto'` | 表头吸顶时的层级。 |
+| `activeClass` | `string` | `'fixed'` | 表头吸顶时添加的 class。 |
+| `top` | `number` | - | 已废弃，作为 `offsetTop` 的兼容别名。 |
+| `parent` | `string` | - | 已废弃，作为 `scrollTarget` 的兼容别名。 |
+| `willBeChangeElementClasses` | `string[]` | - | 已废弃，作为 `observe` 的兼容别名。 |
 
 配置优先级：
 
-1. 指令参数，例如 `v-sticky="{ top: 64 }"`。
-2. 插件安装参数，例如 `app.use(Vue3TableStickyPlugin, { top: 64 })`。
+1. 指令参数，例如 `v-sticky="{ offsetTop: 64 }"`。
+2. 插件安装参数，例如 `app.use(Vue3TableStickyPlugin, { offsetTop: 64 })`。
 3. 插件默认值。
 
 ## 全局默认配置
@@ -121,8 +140,8 @@ interface StickyOptions {
 
 ```ts
 app.use(Vue3TableStickyPlugin, {
-  top: 64,
-  parent: '.app-main',
+  offsetTop: 64,
+  scrollTarget: '.app-main',
 });
 ```
 
@@ -131,15 +150,15 @@ app.use(Vue3TableStickyPlugin, {
 ```vue
 <el-table
   v-sticky="{
-    top: 0,
-    parent: '.page-scroll',
+    offsetTop: 0,
+    scrollTarget: '.page-scroll',
   }"
 />
 ```
 
 ## 滚动容器规则
 
-插件会监听 `parent` 指定的滚动容器。表格必须位于该容器内部，并且这个容器必须是真正发生滚动的元素。
+插件会监听 `scrollTarget` 指定的滚动容器。表格必须位于该容器内部，并且这个容器必须是真正发生滚动的元素。如果没有传 `scrollTarget`，插件会自动查找最近的可滚动祖先，找不到时回退到 window。
 
 推荐写法：
 
@@ -200,7 +219,8 @@ pnpm format:check   # 检查 Prettier 格式
 
 ## 注意事项
 
-- `parent` 和 `willBeChangeElementClasses` 都是 CSS 选择器。
+- `scrollTarget`、`boundary` 和 `observe` 在接收选择器的位置都支持 CSS 选择器。
+- `parent` 和 `willBeChangeElementClasses` 仍作为已废弃兼容别名可用。
 - 无效选择器会被忽略，并在控制台输出 warning。
 - 可选监听元素不存在时不会阻断页面渲染。
 - 吸顶激活时，插件会在 Element Plus 表头 wrapper 上添加 `fixed` class，并在取消吸顶时移除。

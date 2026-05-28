@@ -3,6 +3,12 @@ export interface CancelableFunction<A extends any[] = any[]> {
   cancel: () => void;
 }
 
+/**
+ * @description 创建可取消的防抖函数。
+ * @param {(...args: A) => void} fn 需要防抖的函数。
+ * @param {number} delay 防抖延迟毫秒数。
+ * @returns {CancelableFunction<A>} 可取消的防抖函数。
+ */
 export function createDebounced<A extends any[]>(
   fn: (...args: A) => void,
   delay: number,
@@ -28,6 +34,12 @@ export function createDebounced<A extends any[]>(
   return debounced;
 }
 
+/**
+ * @description 创建可取消的节流函数。
+ * @param {(...args: A) => void} fn 需要节流的函数。
+ * @param {number} delay 节流延迟毫秒数。
+ * @returns {CancelableFunction<A>} 可取消的节流函数。
+ */
 export function createThrottled<A extends any[]>(
   fn: (...args: A) => void,
   delay: number,
@@ -77,8 +89,8 @@ export function createThrottled<A extends any[]>(
 
 /**
  * @desc 防抖装饰器
- * @param delay {number}
- * @param immediate {boolean}
+ * @param {number} delay 防抖延迟毫秒数。
+ * @param {boolean} immediate 是否在首次触发时立即执行。
  * @returns {MethodDecorator}
  */
 export function Debounce(delay: number, immediate: boolean = false) {
@@ -116,10 +128,19 @@ export function Debounce(delay: number, immediate: boolean = false) {
     return descriptor;
   };
 }
+
+/**
+ * @description 判断传入值是否为 HTMLElement。
+ * @param {unknown} value 需要判断的值。
+ * @returns {value is HTMLElement} 当值为 HTMLElement 时返回 true。
+ */
+export function isHTMLElement(value: unknown): value is HTMLElement {
+  return value instanceof HTMLElement;
+}
 /**
  * @desc 节流装饰器
- * @param delay {number}
- * @param leading {boolean}
+ * @param {number} delay 节流延迟毫秒数。
+ * @param {boolean} leading 是否在首次触发时执行。
  * @returns {MethodDecorator}
  */
 export function Throttle(delay: number, leading: boolean = true) {

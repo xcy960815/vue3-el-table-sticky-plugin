@@ -42,7 +42,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, onMounted, reactive, ref } from 'vue';
+import { computed, nextTick, onMounted, reactive } from 'vue';
 
 interface TableRow {
   date: string;
@@ -73,14 +73,14 @@ const props = withDefaults(
   },
 );
 
-const stickyTopValue = ref(0);
 const formItems = reactive<Array<{ id: number; label: string }>>([]);
 const tableData = reactive<TableRow[]>([]);
 
 const stickyOptions = computed(() => ({
-  top: stickyTopValue.value,
-  parent: props.parentSelector || undefined,
-  willBeChangeElementClasses: props.showToolbar ? ['.table-top-dom'] : [],
+  scrollTarget: props.parentSelector || undefined,
+  offsetTop: 0,
+  boundary: 'table' as const,
+  observe: props.showToolbar ? ['.table-top-dom'] : [],
 }));
 
 const tableStyle = computed(() => {
@@ -111,18 +111,10 @@ function addFormItems(formItemCount: number) {
       label: 'test-label',
     });
   }
-  void nextTick(() => {
-    requestAnimationFrame(refreshTop);
-  });
 }
 
 function addTableRow() {
   tableData.push(createRow('添加的数据'));
-}
-
-function refreshTop() {
-  const topElement = document.querySelector('.table-top-dom');
-  stickyTopValue.value = topElement?.getBoundingClientRect().top || 0;
 }
 
 onMounted(async () => {

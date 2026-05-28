@@ -1,14 +1,16 @@
 .DS_Store
 node_modules
 /script
-/public
-/examples
+/index.html
+/src
 .browserslistrc
 package-lock.json
 pnpm-lock.yaml
 rollup.config.js
 rollup.config.mjs
-api-extractor.json
+rollup.dts.config.mjs
+vite.config.ts
+vite.plugin.config.ts
 /example
 
 vue.config.js

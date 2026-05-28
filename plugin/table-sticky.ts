@@ -63,7 +63,10 @@ export class TableStickyPlugin {
     if (!tableElements) return undefined;
 
     const options = this.resolveOptions(option);
-    const scrollElement = this.resolveScrollElement(options.parent, Boolean(option.binding.value?.parent));
+    const scrollElement = this.resolveScrollElement(
+      options.parent,
+      Boolean(option.binding.value?.parent),
+    );
     if (!scrollElement) return undefined;
 
     const state = this.createBaseState(tableElements, scrollElement, options);
@@ -126,14 +129,16 @@ export class TableStickyPlugin {
   }
 
   private attachWatchedElementObservers(state: StickyState): void {
-    state.watchedElementObservers = this.resolveWatchedElements(state).map(({ selector, element }) => {
-      const observer = new ResizeObserver(() => {
-        state.refreshLayout();
-      });
+    state.watchedElementObservers = this.resolveWatchedElements(state).map(
+      ({ selector, element }) => {
+        const observer = new ResizeObserver(() => {
+          state.refreshLayout();
+        });
 
-      observer.observe(element);
-      return { selector, element, observer };
-    });
+        observer.observe(element);
+        return { selector, element, observer };
+      },
+    );
   }
 
   private disconnectWatchedElementObservers(state: StickyState): void {
@@ -238,8 +243,8 @@ export class TableStickyPlugin {
       typeof bindingValue?.top === 'number'
         ? bindingValue.top
         : typeof option.installOption?.top === 'number'
-        ? option.installOption.top
-        : this.getTableHeaderCurrentTop(option.tableElement);
+          ? option.installOption.top
+          : this.getTableHeaderCurrentTop(option.tableElement);
 
     return {
       fixedTopValue,
@@ -271,7 +276,10 @@ export class TableStickyPlugin {
     };
   }
 
-  private resolveScrollElement(parent: string | undefined, explicitParent: boolean): HTMLElement | undefined {
+  private resolveScrollElement(
+    parent: string | undefined,
+    explicitParent: boolean,
+  ): HTMLElement | undefined {
     if (!parent) return document.body;
 
     const scrollElement = this.safeQuerySelector<HTMLElement>(document, parent);
@@ -286,22 +294,21 @@ export class TableStickyPlugin {
   ): Array<{ selector: string; element: HTMLElement }> {
     const root = state.scrollElement === document.body ? document : state.scrollElement;
 
-    return state.options.willBeChangeElementClasses.reduce<Array<{ selector: string; element: HTMLElement }>>(
-      (elements, selector) => {
-        const element =
-          this.safeQuerySelector<HTMLElement>(root, selector) ||
-          this.safeQuerySelector<HTMLElement>(document, selector);
+    return state.options.willBeChangeElementClasses.reduce<
+      Array<{ selector: string; element: HTMLElement }>
+    >((elements, selector) => {
+      const element =
+        this.safeQuerySelector<HTMLElement>(root, selector) ||
+        this.safeQuerySelector<HTMLElement>(document, selector);
 
-        if (!element) {
-          this.warn(`v-sticky watched selector "${selector}" did not match any element.`);
-          return elements;
-        }
-
-        elements.push({ selector, element });
+      if (!element) {
+        this.warn(`v-sticky watched selector "${selector}" did not match any element.`);
         return elements;
-      },
-      [],
-    );
+      }
+
+      elements.push({ selector, element });
+      return elements;
+    }, []);
   }
 
   private safeQuerySelector<T extends Element>(
@@ -310,7 +317,7 @@ export class TableStickyPlugin {
   ): T | null {
     try {
       return root.querySelector<T>(selector);
-    } catch (_error) {
+    } catch {
       this.warn(`v-sticky selector "${selector}" is not a valid CSS selector.`);
       return null;
     }
@@ -321,10 +328,7 @@ export class TableStickyPlugin {
     return tableHeaderElement?.getBoundingClientRect().top || 0;
   }
 
-  private captureStyles(
-    tableElements: TableElements,
-    scrollElement: HTMLElement,
-  ): StyleSnapshot {
+  private captureStyles(tableElements: TableElements, scrollElement: HTMLElement): StyleSnapshot {
     return {
       header: {
         position: tableElements.tableHeaderElement.style.position,
@@ -363,12 +367,17 @@ export class TableStickyPlugin {
 
   private getMaxZIndex(tableElement: HTMLElement): number {
     return Array.from(tableElement.querySelectorAll('*')).reduce((maxZIndex, element) => {
-      return Math.max(maxZIndex, Number(this.getElementStyle(element as HTMLElement, 'zIndex')) || 0);
+      return Math.max(
+        maxZIndex,
+        Number(this.getElementStyle(element as HTMLElement, 'zIndex')) || 0,
+      );
     }, 0);
   }
 
   private isSameSelectorList(left: string[], right: string[]): boolean {
-    return left.length === right.length && left.every((selector, index) => selector === right[index]);
+    return (
+      left.length === right.length && left.every((selector, index) => selector === right[index])
+    );
   }
 
   private warn(message: string): void {

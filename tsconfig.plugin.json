@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "declarationDir": "./temp"
+  },
+  "include": [],
+  "files": ["plugin/index.ts", "plugin/table-sticky.ts", "plugin/type.ts", "plugin/utils.ts"]
+}

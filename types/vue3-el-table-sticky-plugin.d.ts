@@ -1,15 +1,15 @@
-import type { App } from 'vue';
+import { App } from 'vue';
 
-declare const _default: {
-    install: (app: App<HTMLElement>, installOption?: InstallOption) => void;
-};
-export default _default;
-
-export declare interface InstallOption {
-    parent?: string;
-    top?: number;
+interface InstallOption {
+  parent?: string;
+  top?: number;
 }
 
-export declare const vue3TableStickyPlugin: (app: App<HTMLElement>, installOption?: InstallOption) => void;
+declare const install: (app: App<HTMLElement>, installOption?: InstallOption) => void;
 
-export { }
+declare const _default: {
+  install: (app: App<HTMLElement>, installOption?: InstallOption) => void;
+};
+
+export { _default as default, install as vue3TableStickyPlugin };
+export type { InstallOption };

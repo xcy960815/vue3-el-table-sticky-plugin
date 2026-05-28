@@ -3,7 +3,7 @@
     "isolatedModules": true,
     "skipLibCheck": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "noImplicitAny": false,
     "removeComments": true,
     "esModuleInterop": true,
@@ -12,15 +12,24 @@
     "target": "ES2015",
     "lib": ["ESNext", "DOM"],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@plugin/*": ["./plugin/*"]
     },
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "declaration": true,
-    "declarationDir": "./temp"
+    "declarationDir": "./temp",
+    "noEmit": true
   },
-  "exclude": ["examples"],
-  "include": [],
-  "files": ["src/index.ts", "src/table-sticky.ts", "src/type.ts", "src/utils.ts"]
+  "exclude": [],
+  "include": ["src/**/*.vue"],
+  "files": [
+    "plugin/index.ts",
+    "plugin/table-sticky.ts",
+    "plugin/type.ts",
+    "plugin/utils.ts",
+    "src/main.ts",
+    "src/shims-vue.d.ts"
+  ]
 }

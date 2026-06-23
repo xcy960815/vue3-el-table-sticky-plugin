@@ -6,6 +6,12 @@
 
 一个用于 Element Plus `el-table` 的 Vue 3 指令插件，让表头在页面滚动或业务容器滚动时保持吸顶。
 
+## 文档入口
+
+- 中文文档：<https://xcy960815.github.io/vue3-el-table-sticky-plugin/zh-CN/>
+- 在线演示：<https://xcy960815.github.io/vue3-el-table-sticky-plugin/zh-CN/guide/demo>
+- English docs: <https://xcy960815.github.io/vue3-el-table-sticky-plugin/>
+
 ## 特性
 
 - 支持 `el-table` 表头吸顶，不侵入表格数据和列配置。
@@ -189,6 +195,12 @@ pnpm install
 pnpm dev
 ```
 
+启动文档站：
+
+```bash
+pnpm docs:dev
+```
+
 ## 项目结构
 
 ```text
@@ -202,6 +214,8 @@ dist/       插件构建产物
 
 ```bash
 pnpm dev            # 启动 Vite demo
+pnpm docs:dev       # 启动 VitePress 文档站
+pnpm docs:build     # 构建文档站
 pnpm build          # 构建插件包
 pnpm build:plugin   # 构建插件 JS 和类型声明
 pnpm build:demo     # 构建 demo 应用

@@ -10,7 +10,7 @@ export default defineConfig({
   cleanUrls: true,
   lastUpdated: true,
   head: [
-    ['meta', { name: 'theme-color', content: '#1d5fd1' }],
+    ['meta', { name: 'theme-color', content: '#070a0f' }],
     ['meta', { name: 'author', content: 'xcy960815' }],
   ],
   themeConfig: {

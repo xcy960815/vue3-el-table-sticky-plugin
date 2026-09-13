@@ -9,7 +9,7 @@ export class TableStickyPlugin {
   private states = new WeakMap<HTMLElement, StickyState>();
   private tableAdapter = new ElementPlusTableAdapter();
   private scrollContainerResolver = new ScrollContainerResolver();
-  private stickyController = new StickyController();
+  private stickyController = new StickyController(this.scrollContainerResolver);
 
   /**
    * @description 处理单个表格的 Vue 指令 mounted 钩子。

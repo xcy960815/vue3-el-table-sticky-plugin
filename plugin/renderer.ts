@@ -1,4 +1,5 @@
 import type { StickyMeasurement, StickyState, StyleSnapshot, TableElements } from './type';
+import { claimStickyZIndex, releaseStickyZIndex } from './z-index-registry';
 
 const DEFAULT_FIXED_CLASS_NAME = 'fixed';
 
@@ -65,13 +66,16 @@ export class StickyRenderer {
     state.placeholderElement.style.height = `${measurement.headerHeight}px`;
 
     const headerStyle = state.tableHeaderElement.style;
+    const zIndex =
+      state.appliedZIndex ?? claimStickyZIndex(state.tableHeaderElement, measurement.zIndex);
+    state.appliedZIndex = zIndex;
     headerStyle.position = 'fixed';
     headerStyle.left = `${measurement.left}px`;
     headerStyle.right = 'auto';
     headerStyle.top = `${measurement.top}px`;
     headerStyle.transition = 'top .16s ease';
     headerStyle.width = `${measurement.width}px`;
-    headerStyle.zIndex = `${measurement.zIndex}`;
+    headerStyle.zIndex = `${zIndex}`;
 
     const activeClass = state.options.activeClass || DEFAULT_FIXED_CLASS_NAME;
     if (!state.tableHeaderElement.classList.contains(activeClass)) {
@@ -94,6 +98,8 @@ export class StickyRenderer {
     Object.assign(state.tableHeaderElement.style, state.styles.header);
     state.placeholderElement.style.display = 'none';
     state.placeholderElement.style.height = '0px';
+    releaseStickyZIndex(state.tableHeaderElement);
+    state.appliedZIndex = null;
 
     if (state.addedFixedClass) {
       state.tableHeaderElement.classList.remove(state.appliedActiveClass);

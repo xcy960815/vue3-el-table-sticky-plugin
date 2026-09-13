@@ -35,6 +35,24 @@ export class ObserverManager {
 
     this.attachTableResizeObserver(state, refreshLayout);
     this.attachWatchedElementObservers(state, refreshLayout);
+    this.attachReparentObserver(state, requestUpdate);
+  }
+
+  /**
+   * @description 监听全局 DOM 变动，兜底捕捉表格被搬移出当前滚动容器的情况。纯搬移不改变尺寸，不会触发 ResizeObserver，也不会派发滚动事件，若不主动检查，换容器后的吸顶会静默失效；回调只做轻量 contains 检查，确认失联后才调度重解析。
+   * @param {StickyState} state 需要观察的吸顶状态。
+   * @param {() => void} requestUpdate 用于调度渲染（内含滚动上下文重解析）的回调。
+   * @returns {void}
+   */
+  private attachReparentObserver(state: StickyState, requestUpdate: () => void): void {
+    const mutationObserver = new MutationObserver(() => {
+      if (!state.disposed && !state.scrollContext.element.contains(state.tableElement)) {
+        requestUpdate();
+      }
+    });
+
+    mutationObserver.observe(document.documentElement, { childList: true, subtree: true });
+    state.cleanups.push(() => mutationObserver.disconnect());
   }
 
   /**

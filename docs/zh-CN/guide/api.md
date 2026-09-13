@@ -52,8 +52,8 @@ interface StickyOptions {
 | `scrollTarget` | `string \| HTMLElement \| Window` | 最近可滚动祖先，其次是 `window` | 用于吸顶计算的滚动容器。 |
 | `boundary` | `'table' \| 'scroll-container' \| string \| HTMLElement` | `'table'` | 触达底部后释放吸顶表头的边界元素。 |
 | `observe` | `Array<string \| HTMLElement>` | `[]` | 会影响吸顶位置的元素列表，这些元素尺寸变化时会触发布局重算。 |
-| `strategy` | `'auto' \| 'fixed' \| 'sticky'` | `'auto'` | 预留策略配置，当前实现使用 fixed 定位渲染。 |
-| `zIndex` | `number \| 'auto'` | `'auto'` | 表头吸顶时的层级。 |
+| `strategy` | `'auto' \| 'fixed' \| 'sticky'` | `'auto'` | 预留策略配置，当前实现使用 fixed 定位渲染，显式传入 `'sticky'` 会输出提示并回退。 |
+| `zIndex` | `number \| 'auto'` | `'auto'` | 表头吸顶时的层级；`'auto'` 按表内最大 z-index 推导，多张表头同时吸顶时自动错开。 |
 | `activeClass` | `string` | `'fixed'` | 表头吸顶时附加的 class。 |
 | `top` | `number` | - | 已废弃，作为 `offsetTop` 的兼容别名。 |
 | `parent` | `string` | - | 已废弃，作为 `scrollTarget` 的兼容别名。 |

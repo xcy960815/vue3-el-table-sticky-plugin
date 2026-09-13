@@ -112,6 +112,8 @@ export interface StickyState extends TableElements {
   headerOffsetWithinTable: number;
   /** 缓存的吸顶 z-index；为 null 表示需要在下次进入吸顶时重新扫描。 */
   cachedZIndex: number | null;
+  /** 当前吸顶渲染实际应用的 z-index；为 null 表示未在吸顶中。 */
+  appliedZIndex: number | null;
   placeholderElement: HTMLDivElement;
   rafId: number | null;
   tableResizeObserver?: ResizeObserver;

@@ -127,8 +127,8 @@ interface StickyOptions {
 | `scrollTarget` | `string \| HTMLElement \| Window` | 最近可滚动祖先，其次是 window | 用于吸顶计算的滚动容器。 |
 | `boundary` | `'table' \| 'scroll-container' \| string \| HTMLElement` | `'table'` | 触达底部后释放吸顶表头的边界元素。 |
 | `observe` | `Array<string \| HTMLElement>` | `[]` | 会影响吸顶位置的元素列表；这些元素尺寸变化时会触发布局重算。 |
-| `strategy` | `'auto' \| 'fixed' \| 'sticky'` | `'auto'` | 预留策略配置；当前引擎使用 fixed 定位渲染。 |
-| `zIndex` | `number \| 'auto'` | `'auto'` | 表头吸顶时的层级。 |
+| `strategy` | `'auto' \| 'fixed' \| 'sticky'` | `'auto'` | 预留策略配置；当前引擎使用 fixed 定位渲染，显式传入 `'sticky'` 会输出提示并回退。 |
+| `zIndex` | `number \| 'auto'` | `'auto'` | 表头吸顶时的层级；`'auto'` 按表内最大 z-index 推导，多张表头同时吸顶时自动错开。 |
 | `activeClass` | `string` | `'fixed'` | 表头吸顶时添加的 class。 |
 | `top` | `number` | - | 已废弃，作为 `offsetTop` 的兼容别名。 |
 | `parent` | `string` | - | 已废弃，作为 `scrollTarget` 的兼容别名。 |
@@ -240,6 +240,8 @@ pnpm format:check   # 检查 Prettier 格式
 - 无效选择器会被忽略，并在控制台输出 warning。
 - 可选监听元素不存在时不会阻断页面渲染。
 - 吸顶激活时，插件会在 Element Plus 表头 wrapper 上添加 `fixed` class，并在取消吸顶时移除。
+- 表格在运行时被移动到其他滚动容器时，插件会在下一次渲染前自动重新解析滚动容器并迁移监听。
+- 表格设置了 `height` 导致表体内部滚动时，吸顶跟随外层滚动容器，插件会在控制台提示。
 
 ## License
 

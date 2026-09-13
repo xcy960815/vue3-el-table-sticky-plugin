@@ -1,12 +1,19 @@
 import type { ResolvedStickyOptions, StickyState, TableElements } from './type';
+import { warn } from './dom';
 import { StickyGeometry } from './geometry';
 import { ObserverManager } from './observer';
+import { ScrollContainerResolver } from './scroll-container';
 import { StickyRenderer } from './renderer';
 
 export class StickyController {
   private geometry = new StickyGeometry();
   private observerManager = new ObserverManager();
   private renderer = new StickyRenderer();
+  private scrollContainerResolver: ScrollContainerResolver;
+
+  constructor(scrollContainerResolver?: ScrollContainerResolver) {
+    this.scrollContainerResolver = scrollContainerResolver ?? new ScrollContainerResolver();
+  }
 
   /**
    * @description 为单个表格实例创建吸顶运行时状态。
@@ -32,6 +39,7 @@ export class StickyController {
       appliedActiveClass: options.activeClass,
       headerOffsetWithinTable: 0,
       cachedZIndex: null,
+      appliedZIndex: null,
       placeholderElement,
       rafId: null,
       watchedElementObservers: [],
@@ -41,8 +49,45 @@ export class StickyController {
 
     state.boundaryElement = this.geometry.resolveBoundaryElement(state);
     this.geometry.refreshHeaderOffset(state);
+    this.warnReservedStrategy(options);
+    this.warnIfTableScrollsInternally(state);
 
     return state;
+  }
+
+  /**
+   * @description strategy 'sticky' 为预留配置，当前引擎仅支持 fixed 定位渲染，显式提示避免静默忽略。
+   * @param {ResolvedStickyOptions} options 已解析的吸顶配置。
+   * @returns {void}
+   */
+  private warnReservedStrategy(options: ResolvedStickyOptions): void {
+    if (options.strategy === 'sticky') {
+      warn(
+        "v-sticky strategy 'sticky' is reserved but not implemented yet; falling back to the fixed rendering engine.",
+      );
+    }
+  }
+
+  /**
+   * @description 检测表格 body 是否在内部滚动（通常是给 el-table 设置了 height），此时吸顶跟随外层容器，内部滚动不会触发表头吸顶。
+   * @param {StickyState} state 吸顶状态。
+   * @returns {void}
+   */
+  private warnIfTableScrollsInternally(state: StickyState): void {
+    const wrappers = [state.tableBodyElement];
+    const scrollbarWrap = state.tableBodyElement.querySelector<HTMLElement>('.el-scrollbar__wrap');
+    if (scrollbarWrap) wrappers.push(scrollbarWrap);
+
+    const scrollsInternally = wrappers.some((element) => {
+      const overflowY = window.getComputedStyle(element).overflowY;
+      return /(auto|scroll)/.test(overflowY) && element.scrollHeight > element.clientHeight;
+    });
+
+    if (scrollsInternally) {
+      warn(
+        'v-sticky detected an internally scrolling table body (usually caused by a fixed height on el-table); the sticky header follows the outer scroll container instead.',
+      );
+    }
   }
 
   /**
@@ -128,21 +173,59 @@ export class StickyController {
 
     this.renderer.reset(state);
     this.observerManager.disconnectWatchedElementObservers(state);
-    state.cleanups.forEach((cleanup) => cleanup());
-    state.cleanups = [];
+    this.detachListeners(state);
     state.placeholderElement.remove();
   }
 
   /**
-   * @description 测量并渲染当前吸顶阶段。
+   * @description 测量并渲染当前吸顶阶段；渲染前校验滚动上下文是否因 DOM 搬移而失效。
    * @param {StickyState} state 需要渲染的吸顶状态。
    * @returns {void}
    */
   private render(state: StickyState): void {
     if (state.disposed) return;
 
+    if (this.revalidateScrollContext(state)) return;
+
     const measurement = this.geometry.measure(state);
     this.renderer.render(state, measurement);
+  }
+
+  /**
+   * @description 校验表格是否仍在已绑定的滚动容器内；表格被搬移到其他容器时自动重新解析并迁移滚动监听，搬移前只会静默失效。
+   * @param {StickyState} state 吸顶状态。
+   * @returns {boolean} 本轮渲染是否已被重解析流程接管（需要跳过常规测量）。
+   */
+  private revalidateScrollContext(state: StickyState): boolean {
+    if (state.scrollContext.element.contains(state.tableElement)) return false;
+
+    this.renderer.reset(state);
+
+    if (!state.tableElement.isConnected) return true;
+
+    const nextContext = this.scrollContainerResolver.resolve(
+      state.options.scrollTarget,
+      state.tableElement,
+    );
+    if (!nextContext || nextContext.element === state.scrollContext.element) return true;
+
+    this.detachListeners(state);
+    state.scrollContext = nextContext;
+    state.boundaryElement = this.geometry.resolveBoundaryElement(state);
+    state.cachedZIndex = null;
+    this.attach(state);
+
+    return true;
+  }
+
+  /**
+   * @description 执行并清空当前状态的监听清理回调（滚动、resize、ResizeObserver 与 overflow-anchor 占用）。
+   * @param {StickyState} state 吸顶状态。
+   * @returns {void}
+   */
+  private detachListeners(state: StickyState): void {
+    state.cleanups.forEach((cleanup) => cleanup());
+    state.cleanups = [];
   }
 
   /**

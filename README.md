@@ -127,8 +127,8 @@ interface StickyOptions {
 | `scrollTarget` | `string \| HTMLElement \| Window` | Nearest scroll parent, then window | Scroll container used for sticky calculations. |
 | `boundary` | `'table' \| 'scroll-container' \| string \| HTMLElement` | `'table'` | Boundary that releases the sticky header when its bottom is reached. |
 | `observe` | `Array<string \| HTMLElement>` | `[]` | Elements whose size changes should trigger layout recalculation. |
-| `strategy` | `'auto' \| 'fixed' \| 'sticky'` | `'auto'` | Reserved strategy option; current engine renders with fixed positioning. |
-| `zIndex` | `number \| 'auto'` | `'auto'` | Sticky header stacking order. |
+| `strategy` | `'auto' \| 'fixed' \| 'sticky'` | `'auto'` | Reserved strategy option; current engine renders with fixed positioning. Explicitly passing `'sticky'` logs a notice and falls back. |
+| `zIndex` | `number \| 'auto'` | `'auto'` | Sticky header stacking order; `'auto'` derives from the largest in-table z-index and staggers automatically when multiple headers stick at once. |
 | `activeClass` | `string` | `'fixed'` | Class added while sticky is active. |
 | `top` | `number` | - | Deprecated alias of `offsetTop`. |
 | `parent` | `string` | - | Deprecated alias of `scrollTarget`. |
@@ -240,6 +240,8 @@ The package exposes:
 - Invalid selectors are ignored with a console warning.
 - Missing optional watched elements do not block rendering.
 - The plugin adds and removes the `fixed` class on the Element Plus table header wrapper while sticky is active.
+- When a table is moved into another scroll container at runtime, the plugin re-resolves the container and migrates its listeners before the next render.
+- When the table body scrolls internally (usually caused by a fixed `height` on `el-table`), the sticky header follows the outer scroll container and the plugin logs a notice.
 
 ## License
 

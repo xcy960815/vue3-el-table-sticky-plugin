@@ -234,6 +234,8 @@ The package exposes:
 ## Notes
 
 - `scrollTarget`, `boundary`, and `observe` support CSS selectors where a selector is accepted.
+- On pages with multiple tables, `scrollTarget` resolves to the nearest matching ancestor of the table; `observe` and `boundary` selectors match the table itself or an ancestor first, otherwise the candidate sharing the closest common ancestor with the table, so tables no longer all bind to the same global element.
+- The scroll container passed as `scrollTarget` must contain the table; otherwise the option is ignored with a warning.
 - `parent` and `willBeChangeElementClasses` remain available as deprecated compatibility aliases.
 - Invalid selectors are ignored with a console warning.
 - Missing optional watched elements do not block rendering.

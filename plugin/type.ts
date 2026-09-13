@@ -76,7 +76,6 @@ export interface StyleSnapshot {
     'left' | 'position' | 'right' | 'top' | 'transition' | 'width' | 'zIndex'
   >;
   placeholder: Pick<CSSStyleDeclaration, 'display' | 'height'>;
-  scrollElement: Pick<CSSStyleDeclaration, 'overflowAnchor'>;
 }
 
 export interface WatchedElementObserver {
@@ -111,6 +110,8 @@ export interface StickyState extends TableElements {
   addedFixedClass: boolean;
   appliedActiveClass: string;
   headerOffsetWithinTable: number;
+  /** 缓存的吸顶 z-index；为 null 表示需要在下次进入吸顶时重新扫描。 */
+  cachedZIndex: number | null;
   placeholderElement: HTMLDivElement;
   rafId: number | null;
   tableResizeObserver?: ResizeObserver;

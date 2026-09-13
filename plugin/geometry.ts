@@ -36,7 +36,7 @@ export class StickyGeometry {
     if (boundary === 'scroll-container') return state.scrollContext.element;
 
     const root = state.scrollContext.isWindow ? document : state.scrollContext.element;
-    const element = resolveElementTarget(boundary, root);
+    const element = resolveElementTarget(boundary, root, state.tableElement);
 
     if (!element) {
       warn(`v-sticky boundary selector "${boundary}" did not match any element.`);
@@ -115,8 +115,26 @@ export class StickyGeometry {
       left,
       width,
       headerHeight: state.tableHeaderElement.offsetHeight,
-      zIndex: this.resolveZIndex(state),
+      zIndex: this.resolveMeasurementZIndex(state, phase),
     };
+  }
+
+  /**
+   * @description 解析本次测量使用的 z-index。仅在表头进入吸顶时扫描一次表格内部层级并缓存，避免每个滚动帧全表扫描 computed style，也避免吸顶期间读到自身已应用的 z-index 导致逐帧递增。
+   * @param {StickyState} state 包含 z-index 缓存的吸顶状态。
+   * @param {StickyMeasurement['phase']} phase 当前吸顶阶段。
+   * @returns {number} 数值化后的 z-index。
+   */
+  private resolveMeasurementZIndex(state: StickyState, phase: StickyMeasurement['phase']): number {
+    if (phase !== 'stuck') {
+      return state.cachedZIndex ?? 0;
+    }
+
+    if (state.cachedZIndex === null) {
+      state.cachedZIndex = this.resolveZIndex(state);
+    }
+
+    return state.cachedZIndex;
   }
 
   /**

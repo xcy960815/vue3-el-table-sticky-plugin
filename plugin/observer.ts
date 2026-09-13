@@ -1,6 +1,14 @@
 import type { StickyElementTarget, StickyState } from './type';
 import { resolveElementTarget, warn } from './dom';
 
+interface OverflowAnchorUsage {
+  count: number;
+  original: string;
+}
+
+// 同一滚动容器可能被多个表格共享，引用计数避免各表格的样式快照互相覆盖或提前恢复。
+const overflowAnchorUsages = new WeakMap<HTMLElement, OverflowAnchorUsage>();
+
 export class ObserverManager {
   /**
    * @description 绑定滚动、窗口尺寸和监听元素的观察器。
@@ -10,7 +18,7 @@ export class ObserverManager {
    * @returns {void}
    */
   public attach(state: StickyState, requestUpdate: () => void, refreshLayout: () => void): void {
-    state.scrollContext.element.style.overflowAnchor = 'none';
+    this.acquireOverflowAnchor(state.scrollContext.element);
 
     const scrollTarget: HTMLElement | Window = state.scrollContext.isWindow
       ? window
@@ -22,6 +30,7 @@ export class ObserverManager {
     state.cleanups.push(() => {
       scrollTarget.removeEventListener('scroll', requestUpdate);
       window.removeEventListener('resize', refreshLayout);
+      this.releaseOverflowAnchor(state.scrollContext.element);
     });
 
     this.attachTableResizeObserver(state, refreshLayout);
@@ -85,7 +94,7 @@ export class ObserverManager {
     return state.options.observe.reduce<
       Array<{ target: StickyElementTarget; element: HTMLElement }>
     >((elements, target) => {
-      const element = resolveElementTarget(target, root);
+      const element = resolveElementTarget(target, root, state.tableElement);
 
       if (!element) {
         warn(`v-sticky observe target "${target}" did not match any element.`);
@@ -95,5 +104,39 @@ export class ObserverManager {
       elements.push({ target, element });
       return elements;
     }, []);
+  }
+
+  /**
+   * @description 为滚动容器启用 overflow-anchor: none；按引用计数共享同一容器。
+   * @param {HTMLElement} element 滚动容器元素。
+   * @returns {void}
+   */
+  private acquireOverflowAnchor(element: HTMLElement): void {
+    const usage = overflowAnchorUsages.get(element);
+
+    if (usage) {
+      usage.count += 1;
+      return;
+    }
+
+    overflowAnchorUsages.set(element, { count: 1, original: element.style.overflowAnchor });
+    element.style.overflowAnchor = 'none';
+  }
+
+  /**
+   * @description 释放滚动容器的 overflow-anchor 占用，最后一个释放者恢复原始内联样式。
+   * @param {HTMLElement} element 滚动容器元素。
+   * @returns {void}
+   */
+  private releaseOverflowAnchor(element: HTMLElement): void {
+    const usage = overflowAnchorUsages.get(element);
+    if (!usage) return;
+
+    usage.count -= 1;
+
+    if (usage.count <= 0) {
+      element.style.overflowAnchor = usage.original;
+      overflowAnchorUsages.delete(element);
+    }
   }
 }

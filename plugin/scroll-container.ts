@@ -1,6 +1,6 @@
 import type { ScrollContext, StickyScrollTarget } from './type';
 import { isHTMLElement } from './utils';
-import { safeQuerySelector, warn } from './dom';
+import { warn } from './dom';
 
 export class ScrollContainerResolver {
   /**
@@ -25,6 +25,11 @@ export class ScrollContainerResolver {
     }
 
     if (isHTMLElement(target)) {
+      if (!target.contains(tableElement)) {
+        warn('v-sticky scrollTarget element must contain the table element.');
+        return undefined;
+      }
+
       return {
         element: target,
         isWindow: false,
@@ -36,9 +41,11 @@ export class ScrollContainerResolver {
       return undefined;
     }
 
-    const element = safeQuerySelector<HTMLElement>(document, target);
+    const element = this.resolveSelectorTarget(target, tableElement);
     if (!element) {
-      warn(`v-sticky scrollTarget selector "${target}" did not match any element.`);
+      warn(
+        `v-sticky scrollTarget selector "${target}" did not match any element that contains the table.`,
+      );
       return undefined;
     }
 
@@ -46,6 +53,21 @@ export class ScrollContainerResolver {
       element,
       isWindow: false,
     };
+  }
+
+  /**
+   * @description 将选择器解析为当前表格所在的最近祖先。滚动容器必须包含表格才能参与吸顶计算，凡包含表格的匹配元素必然是其祖先，closest 命中即同时保证了包含关系与就近性，避免页面存在多个同名滚动容器时误命中外层容器。
+   * @param {string} target 滚动容器选择器。
+   * @param {HTMLElement} tableElement 当前表格根元素。
+   * @returns {HTMLElement | null} 解析到的滚动容器元素；无匹配祖先时返回 null。
+   */
+  private resolveSelectorTarget(target: string, tableElement: HTMLElement): HTMLElement | null {
+    try {
+      return tableElement.closest<HTMLElement>(target);
+    } catch {
+      warn(`v-sticky selector "${target}" is not a valid CSS selector.`);
+      return null;
+    }
   }
 
   /**

@@ -234,6 +234,8 @@ pnpm format:check   # 检查 Prettier 格式
 ## 注意事项
 
 - `scrollTarget`、`boundary` 和 `observe` 在接收选择器的位置都支持 CSS 选择器。
+- 多表格页面中，`scrollTarget` 会解析为表格最近的匹配祖先；`observe` 和 `boundary` 选择器优先匹配表格自身或祖先，否则取与表格共享最近公共祖先的元素，避免所有表格命中同一个全局元素。
+- `scrollTarget` 指定的滚动容器必须包含表格，否则会忽略配置并输出 warning。
 - `parent` 和 `willBeChangeElementClasses` 仍作为已废弃兼容别名可用。
 - 无效选择器会被忽略，并在控制台输出 warning。
 - 可选监听元素不存在时不会阻断页面渲染。

@@ -26,11 +26,12 @@ export class StickyController {
       scrollContext,
       boundaryElement: tableElements.tableElement,
       options,
-      styles: this.renderer.captureStyles(tableElements, scrollContext.element),
+      styles: this.renderer.captureStyles(tableElements),
       phase: 'inactive',
       addedFixedClass: false,
       appliedActiveClass: options.activeClass,
       headerOffsetWithinTable: 0,
+      cachedZIndex: null,
       placeholderElement,
       rafId: null,
       watchedElementObservers: [],
@@ -94,6 +95,7 @@ export class StickyController {
     if (state.disposed) return;
 
     this.geometry.refreshHeaderOffset(state);
+    state.cachedZIndex = null;
     this.requestUpdate(state);
   }
 
@@ -125,7 +127,6 @@ export class StickyController {
     }
 
     this.renderer.reset(state);
-    this.renderer.restoreScrollElementStyles(state);
     this.observerManager.disconnectWatchedElementObservers(state);
     state.cleanups.forEach((cleanup) => cleanup());
     state.cleanups = [];

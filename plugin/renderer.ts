@@ -18,10 +18,9 @@ export class StickyRenderer {
   /**
    * @description 捕获取消吸顶时需要恢复的内联样式。
    * @param {TableElements} tableElements 已解析的表格元素。
-   * @param {HTMLElement} scrollElement 样式可能被修改的滚动元素。
    * @returns {StyleSnapshot} 内联样式快照。
    */
-  public captureStyles(tableElements: TableElements, scrollElement: HTMLElement): StyleSnapshot {
+  public captureStyles(tableElements: TableElements): StyleSnapshot {
     return {
       header: {
         left: tableElements.tableHeaderElement.style.left,
@@ -35,9 +34,6 @@ export class StickyRenderer {
       placeholder: {
         display: '',
         height: '',
-      },
-      scrollElement: {
-        overflowAnchor: scrollElement.style.overflowAnchor,
       },
     };
   }
@@ -59,7 +55,7 @@ export class StickyRenderer {
    * @returns {void}
    */
   public render(state: StickyState, measurement: StickyMeasurement): void {
-    if (measurement.phase === 'inactive') {
+    if (measurement.phase === 'inactive' || measurement.phase === 'released') {
       this.reset(state);
       return;
     }
@@ -105,14 +101,5 @@ export class StickyRenderer {
     }
 
     state.phase = 'inactive';
-  }
-
-  /**
-   * @description 恢复滚动元素上被修改的内联样式。
-   * @param {StickyState} state 包含滚动元素样式快照的吸顶状态。
-   * @returns {void}
-   */
-  public restoreScrollElementStyles(state: StickyState): void {
-    Object.assign(state.scrollContext.element.style, state.styles.scrollElement);
   }
 }

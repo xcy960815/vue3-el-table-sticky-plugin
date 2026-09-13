@@ -104,6 +104,15 @@ app.use(Vue3TableStickyPlugin, {
 />
 ```
 
+## Selector Rules on Multi-Table Pages
+
+When multiple `v-sticky` tables exist on the same page, selectors resolve relative to each table instead of all matching the first document element:
+
+- `scrollTarget` resolves to the nearest matching ancestor of the table (`closest`), and that ancestor must contain the table, so nested containers sharing a class each bind to their inner container.
+- `observe` and `boundary` selectors match the table itself or an ancestor first; otherwise the candidate sharing the closest common ancestor with the table wins. For example, when every section has its own `.toolbar`, each table binds to the toolbar inside its own section.
+- To share one watched element across tables, pass an `HTMLElement` reference instead of a selector.
+- The element passed as `scrollTarget` must contain the table; otherwise the option is ignored with a warning.
+
 ## Build Outputs
 
 The published package exposes:

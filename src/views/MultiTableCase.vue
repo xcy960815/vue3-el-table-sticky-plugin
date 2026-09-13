@@ -9,7 +9,7 @@
         v-sticky="stickyOptions"
         class="el-table-sticky secondary-table"
         :data="tableData.slice(0, 24)"
-        :header-cell-style="{ background: 'rgb(34, 139, 34)' }"
+        :header-cell-style="{ background: 'var(--vetp-header-c)' }"
         border
       >
         <el-table-column fixed="left" prop="date" label="Date" width="150" />

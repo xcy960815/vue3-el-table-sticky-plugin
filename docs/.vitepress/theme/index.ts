@@ -2,6 +2,7 @@ import DefaultTheme from 'vitepress/theme';
 import type { Theme } from 'vitepress';
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
+import 'element-plus/theme-chalk/dark/css-vars.css';
 
 import Vue3TableStickyPlugin from '../../../plugin/index';
 import BasicBodyCase from '../../../src/views/BasicBodyCase.vue';

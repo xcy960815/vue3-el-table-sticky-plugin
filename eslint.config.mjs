@@ -25,6 +25,8 @@ export default tseslint.config(
         console: 'readonly',
         document: 'readonly',
         window: 'readonly',
+        localStorage: 'readonly',
+        navigator: 'readonly',
         ResizeObserver: 'readonly',
         CSSStyleDeclaration: 'readonly',
         HTMLElement: 'readonly',

@@ -68,7 +68,7 @@ const props = withDefaults(
     parentSelector: '',
     scrollClass: 'not-layout-page',
     tableHeight: '',
-    headerColor: 'rgb(0, 0, 255)',
+    headerColor: 'var(--vetp-header-a)',
     showToolbar: true,
   },
 );

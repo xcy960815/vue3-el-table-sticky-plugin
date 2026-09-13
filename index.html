@@ -1,10 +1,25 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <title>vue3-el-table-sticky-plugin demo</title>
+    <meta name="theme-color" content="#070a0f" />
+    <title>vue3-el-table-sticky-plugin · Playground</title>
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('vetp-demo-theme');
+          var theme = saved === 'light' || saved === 'dark' ? saved : 'dark';
+          document.documentElement.dataset.theme = theme;
+          document.documentElement.classList.toggle('dark', theme === 'dark');
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', theme === 'dark' ? '#070a0f' : '#f4f6fa');
+        } catch (e) {
+          /* localStorage 不可用时保持默认暗色 */
+        }
+      })();
+    </script>
   </head>
   <body>
     <noscript>

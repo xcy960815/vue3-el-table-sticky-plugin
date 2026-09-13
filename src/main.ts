@@ -1,9 +1,10 @@
 import { createApp } from 'vue';
 import App from './App.vue';
-import './App.css';
 import Vue3TableStickyPlugin from '../plugin/index';
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
+import 'element-plus/theme-chalk/dark/css-vars.css';
+import './App.css';
 import { router } from './router';
 const app = createApp(App);
 app.use(ElementPlus);

@@ -1,36 +1,27 @@
 # vue3-el-table-sticky-plugin
 
-[English](./README.md) | [简体中文](./README.zh-CN.md)
+[English README](./README.md)
 
-[![npm](https://img.shields.io/npm/v/vue3-el-table-sticky-plugin.svg)](https://www.npmjs.com/package/vue3-el-table-sticky-plugin) [![downloads](https://img.shields.io/npm/dw/vue3-el-table-sticky-plugin.svg)](https://npmtrends.com/vue3-el-table-sticky-plugin) [![license](https://img.shields.io/npm/l/vue3-el-table-sticky-plugin.svg)](https://www.npmjs.com/package/vue3-el-table-sticky-plugin) [![vue](https://img.shields.io/badge/vue-3.x-brightgreen.svg)](https://vuejs.org/) [![element--plus](https://img.shields.io/badge/element--plus-2.x-blue.svg)](https://element-plus.org/)
+- 文档地址：[https://xcy960815.github.io/vue3-el-table-sticky-plugin/zh-CN/](https://xcy960815.github.io/vue3-el-table-sticky-plugin/zh-CN/)
+- 在线 Demo：[https://xcy960815.github.io/vue3-el-table-sticky-plugin/zh-CN/guide/demo](https://xcy960815.github.io/vue3-el-table-sticky-plugin/zh-CN/guide/demo)
 
-一个用于 Element Plus `el-table` 的 Vue 3 指令插件，让表头在页面滚动或业务容器滚动时保持吸顶。
+`vue3-el-table-sticky-plugin` 让 Element Plus 的 `el-table` 表头在页面或指定容器滚动时吸顶。
 
-## 文档入口
+把 `v-sticky` 写在表格上。表头用 `fixed` 定位。`strategy: 'sticky'` 会打一条提示，然后仍走这条 `fixed` 路径。对等依赖是 `vue@^3.2.13`。应用里还需要 Element Plus 2.x。
 
-- 中文文档：<https://xcy960815.github.io/vue3-el-table-sticky-plugin/zh-CN/>
-- 在线演示：<https://xcy960815.github.io/vue3-el-table-sticky-plugin/zh-CN/guide/demo>
-- English docs: <https://xcy960815.github.io/vue3-el-table-sticky-plugin/>
+## 功能特性
 
-## 特性
-
-- 支持 `el-table` 表头吸顶，不侵入表格数据和列配置。
-- 支持默认页面滚动，也支持指定业务滚动容器。
-- 支持多个表格实例同时使用，状态按表格实例隔离。
-- 支持监听外部区域尺寸变化后重新计算吸顶位置。
-- 自动处理挂载、更新、卸载时的事件监听和 `ResizeObserver` 清理。
-- 内置 TypeScript 类型声明。
-
-## 环境要求
-
-- Vue `^3.2.13`
-- Element Plus `2.x`
-- Node `^20.19.0 || >=22.12.0`，仅用于本仓库开发和构建
+- `el-table` 表头吸顶，不改列和行数据
+- 可以跟页面滚动，也可以指定滚动容器
+- 同一页多张表各自维护状态
+- 被监听的元素尺寸变化后会重新计算
+- 表格被搬到另一个滚动容器后会重新挂上监听
+- 内置 TypeScript 类型声明
 
 ## 安装
 
 ```bash
-npm install vue3-el-table-sticky-plugin
+npm install vue3-el-table-sticky-plugin -S
 ```
 
 ```bash
@@ -44,53 +35,25 @@ import { createApp } from 'vue';
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
 import Vue3TableStickyPlugin from 'vue3-el-table-sticky-plugin';
-
 import App from './App.vue';
 
-const app = createApp(App);
-
-app.use(ElementPlus);
-app.use(Vue3TableStickyPlugin);
-app.mount('#app');
+createApp(App).use(ElementPlus).use(Vue3TableStickyPlugin).mount('#app');
 ```
-
-在 `el-table` 上使用 `v-sticky`：
 
 ```vue
 <template>
   <div class="page-scroll">
-    <div class="toolbar">
-      <!-- 筛选项、操作按钮、动态内容 -->
-    </div>
-
-    <el-table
-      v-sticky="{
-        offsetTop: 0,
-        scrollTarget: '.page-scroll',
-        observe: ['.toolbar'],
-        boundary: 'table',
-      }"
-      :data="tableData"
-      border
-    >
-      <el-table-column prop="date" label="Date" width="180" />
-      <el-table-column prop="name" label="Name" width="180" />
-      <el-table-column prop="address" label="Address" />
+    <el-table v-sticky="{ offsetTop: 0, scrollTarget: '.page-scroll' }" :data="tableData">
+      <el-table-column prop="name" label="Name" />
     </el-table>
   </div>
 </template>
 
 <script setup lang="ts">
-const tableData = [
-  {
-    date: '2016-05-03',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-];
+const tableData = [{ name: 'Tom' }];
 </script>
 
-<style scoped>
+<style>
 .page-scroll {
   height: 100%;
   overflow-y: auto;
@@ -98,150 +61,76 @@ const tableData = [
 </style>
 ```
 
-## 配置项
+表格必须放在真正滚动的那个元素里面。`scrollTarget` 就是这个元素。
 
-`v-sticky` 接收一个对象：
+## CDN / UMD 用法
 
-```ts
-interface StickyOptions {
-  offsetTop?: number | (() => number);
-  scrollTarget?: string | HTMLElement | Window;
-  boundary?: 'table' | 'scroll-container' | string | HTMLElement;
-  observe?: Array<string | HTMLElement>;
-  strategy?: 'auto' | 'fixed' | 'sticky';
-  zIndex?: number | 'auto';
-  activeClass?: string;
+先加载 Vue 3。这个 UMD 从全局变量 `vue` 读取 Vue。插件本身是 `Vue3ElTableStickyPlugin`，安装对象是默认导出。页面里仍然需要 Element Plus。
 
-  /** @deprecated 请使用 offsetTop。 */
-  top?: number;
-  /** @deprecated 请使用 scrollTarget。 */
-  parent?: string;
-  /** @deprecated 请使用 observe。 */
-  willBeChangeElementClasses?: string[];
-}
+```html
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script>
+  window.vue = Vue;
+</script>
+<script src="https://unpkg.com/vue3-el-table-sticky-plugin/dist/vue3-el-table-sticky-plugin.umd.js"></script>
+<script>
+  Vue.createApp({}).use(Vue3ElTableStickyPlugin.default).mount('#app');
+</script>
 ```
+
+具名导出 `vue3TableStickyPlugin` 就是 `install`。
+
+## API
+
+`v-sticky` 接收一个对象。同样的字段也可以在 `app.use(Vue3TableStickyPlugin, options)` 里当作默认值。指令上的值优先于安装参数。
 
 | 参数 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `offsetTop` | `number \| (() => number)` | 当前表头距离视口顶部的位置 | 表头吸顶后距离当前滚动视口顶部的距离。 |
-| `scrollTarget` | `string \| HTMLElement \| Window` | 最近可滚动祖先，其次是 window | 用于吸顶计算的滚动容器。 |
-| `boundary` | `'table' \| 'scroll-container' \| string \| HTMLElement` | `'table'` | 触达底部后释放吸顶表头的边界元素。 |
-| `observe` | `Array<string \| HTMLElement>` | `[]` | 会影响吸顶位置的元素列表；这些元素尺寸变化时会触发布局重算。 |
-| `strategy` | `'auto' \| 'fixed' \| 'sticky'` | `'auto'` | 预留策略配置；当前引擎使用 fixed 定位渲染，显式传入 `'sticky'` 会输出提示并回退。 |
-| `zIndex` | `number \| 'auto'` | `'auto'` | 表头吸顶时的层级；`'auto'` 按表内最大 z-index 推导，多张表头同时吸顶时自动错开。 |
-| `activeClass` | `string` | `'fixed'` | 表头吸顶时添加的 class。 |
-| `top` | `number` | - | 已废弃，作为 `offsetTop` 的兼容别名。 |
-| `parent` | `string` | - | 已废弃，作为 `scrollTarget` 的兼容别名。 |
-| `willBeChangeElementClasses` | `string[]` | - | 已废弃，作为 `observe` 的兼容别名。 |
+| `offsetTop` | `number \| (() => number)` | 当前表头顶部 | 吸顶后离滚动视口顶部的距离 |
+| `scrollTarget` | `string \| HTMLElement \| Window` | 最近的可滚动祖先，否则是 `window` | 滚动元素 |
+| `boundary` | `'table' \| 'scroll-container' \| string \| HTMLElement` | `'table'` | 到达这个边界底部时松开表头 |
+| `observe` | `Array<string \| HTMLElement>` | `[]` | 这些元素尺寸变化时重新计算表头 |
+| `strategy` | `'auto' \| 'fixed' \| 'sticky'` | `'auto'` | 渲染方式。`'sticky'` 是预留值，会退回 `fixed` |
+| `zIndex` | `number \| 'auto'` | `'auto'` | 层叠顺序。`'auto'` 会推导数值，后吸顶的表头再错开一层 |
+| `activeClass` | `string` | `'fixed'` | 吸顶期间加到表头上的类名 |
+| `top` | `number` | — | `offsetTop` 的旧名字 |
+| `parent` | `string` | — | `scrollTarget` 的旧名字 |
+| `willBeChangeElementClasses` | `string[]` | — | `observe` 的旧名字 |
 
-配置优先级：
+## 使用说明
 
-1. 指令参数，例如 `v-sticky="{ offsetTop: 64 }"`。
-2. 插件安装参数，例如 `app.use(Vue3TableStickyPlugin, { offsetTop: 64 })`。
-3. 插件默认值。
+- `scrollTarget` 必须包住这张表。包不住时会被忽略，并在控制台警告。
+- 一页有多张表时，选择器形式的 `scrollTarget` 用这张表最近的匹配祖先。
+- `observe` 和 `boundary` 的选择器优先匹配表格自己或它的祖先。否则用和表格拥有最近公共祖先的那个候选。
+- 匹配不到的选择器会被忽略，并在控制台警告。少一个被监听元素不会阻止表头吸顶。
+- `el-table` 写了固定 `height` 时，Element Plus 会让表体自己滚。这个插件仍然跟随外面的滚动容器，并打一条提示。
+- 表格被搬进另一个容器后，插件会在下一次渲染前把监听改挂到新容器上。
+- 吸顶期间表头会带上 `activeClass`。默认类名是 `fixed`。
 
-## 全局默认配置
+## 构建产物说明
 
-可以在安装插件时设置默认参数：
+当前发布包包含：
 
-```ts
-app.use(Vue3TableStickyPlugin, {
-  offsetTop: 64,
-  scrollTarget: '.app-main',
-});
-```
+- `dist/vue3-el-table-sticky-plugin.esm.js`：ESM
+- `dist/vue3-el-table-sticky-plugin.umd.js`：UMD
+- `types/vue3-el-table-sticky-plugin.d.ts`：TypeScript 类型声明
 
-指令参数会覆盖全局默认配置：
-
-```vue
-<el-table
-  v-sticky="{
-    offsetTop: 0,
-    scrollTarget: '.page-scroll',
-  }"
-/>
-```
-
-## 滚动容器规则
-
-插件会监听 `scrollTarget` 指定的滚动容器。表格必须位于该容器内部，并且这个容器必须是真正发生滚动的元素。如果没有传 `scrollTarget`，插件会自动查找最近的可滚动祖先，找不到时回退到 window。
-
-推荐写法：
-
-```css
-.page-scroll {
-  height: 100%;
-  overflow-y: auto;
-}
-```
-
-如果要测试外层业务容器滚动，不要给 `el-table` 设置固定 `height`。Element Plus 在设置 `height` 后会让表格 body 内部滚动，而插件监听的是你指定的外层 `parent`，两者不一致时吸顶不会触发。
-
-## Demo 路由
-
-仓库内置 Vite demo，每个测试场景一个地址：
-
-| 地址               | 场景                                   |
-| ------------------ | -------------------------------------- |
-| `/#/basic-body`    | 默认 body 滚动。                       |
-| `/#/parent-scroll` | 指定父级滚动容器。                     |
-| `/#/multi-table`   | 同一滚动容器内多个吸顶表格。           |
-| `/#/dynamic-top`   | 顶部工具栏高度变化后重新计算吸顶位置。 |
-
-启动 demo：
+## 本地开发
 
 ```bash
 pnpm install
-pnpm dev
-```
-
-启动文档站：
-
-```bash
-pnpm docs:dev
+pnpm run dev
+pnpm run lint
+pnpm run build
 ```
 
 ## 项目结构
 
-```text
-plugin/     插件源码
-src/        Vite demo 应用
-types/      打包后的 TypeScript 类型声明
-dist/       插件构建产物
-```
-
-## 常用命令
-
-```bash
-pnpm dev            # 启动 Vite demo
-pnpm docs:dev       # 启动 VitePress 文档站
-pnpm docs:build     # 构建文档站
-pnpm build          # 构建插件包
-pnpm build:plugin   # 构建插件 JS 和类型声明
-pnpm build:demo     # 构建 demo 应用
-pnpm lint           # 运行 ESLint
-pnpm format:check   # 检查 Prettier 格式
-```
-
-## 构建产物
-
-包入口包括：
-
-- `dist/vue3-el-table-sticky-plugin.esm.js`
-- `dist/vue3-el-table-sticky-plugin.umd.js`
-- `types/vue3-el-table-sticky-plugin.d.ts`
-
-## 注意事项
-
-- `scrollTarget`、`boundary` 和 `observe` 在接收选择器的位置都支持 CSS 选择器。
-- 多表格页面中，`scrollTarget` 会解析为表格最近的匹配祖先；`observe` 和 `boundary` 选择器优先匹配表格自身或祖先，否则取与表格共享最近公共祖先的元素，避免所有表格命中同一个全局元素。
-- `scrollTarget` 指定的滚动容器必须包含表格，否则会忽略配置并输出 warning。
-- `parent` 和 `willBeChangeElementClasses` 仍作为已废弃兼容别名可用。
-- 无效选择器会被忽略，并在控制台输出 warning。
-- 可选监听元素不存在时不会阻断页面渲染。
-- 吸顶激活时，插件会在 Element Plus 表头 wrapper 上添加 `fixed` class，并在取消吸顶时移除。
-- 表格在运行时被移动到其他滚动容器时，插件会在下一次渲染前自动重新解析滚动容器并迁移监听。
-- 表格设置了 `height` 导致表体内部滚动时，吸顶跟随外层滚动容器，插件会在控制台提示。
+- `plugin/index.ts`：指令安装
+- `plugin/table-sticky.ts`：参数和生命周期
+- `plugin/controller.ts`：吸顶状态
+- `src/`：本地 demo
+- `vite.plugin.config.ts`：库构建
 
 ## License
 

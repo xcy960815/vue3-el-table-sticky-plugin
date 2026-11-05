@@ -1,36 +1,28 @@
 # vue3-el-table-sticky-plugin
 
-[English](./README.md) | [简体中文](./README.zh-CN.md)
+[![npm](https://img.shields.io/npm/v/vue3-el-table-sticky-plugin.svg)](https://www.npmjs.com/package/vue3-el-table-sticky-plugin) [![License](https://img.shields.io/npm/l/vue3-el-table-sticky-plugin.svg)](https://github.com/xcy960815/vue3-el-table-sticky-plugin) [![npm](https://img.shields.io/npm/dm/vue3-el-table-sticky-plugin.svg)](https://github.com/xcy960815/vue3-el-table-sticky-plugin) [![CI](https://img.shields.io/badge/CI-passing-brightgreen.svg)](https://github.com/xcy960815/vue3-el-table-sticky-plugin/actions) [![GitHub issues](https://img.shields.io/github/issues/xcy960815/vue3-el-table-sticky-plugin.svg)](https://github.com/xcy960815/vue3-el-table-sticky-plugin/issues) [![GitHub stars](https://img.shields.io/github/stars/xcy960815/vue3-el-table-sticky-plugin.svg?style=social&label=Stars)](https://github.com/xcy960815/vue3-el-table-sticky-plugin) [![GitHub forks](https://img.shields.io/github/forks/xcy960815/vue3-el-table-sticky-plugin.svg?style=social&label=Fork)](https://github.com/xcy960815/vue3-el-table-sticky-plugin)
 
-[![npm](https://img.shields.io/npm/v/vue3-el-table-sticky-plugin.svg)](https://www.npmjs.com/package/vue3-el-table-sticky-plugin) [![downloads](https://img.shields.io/npm/dw/vue3-el-table-sticky-plugin.svg)](https://npmtrends.com/vue3-el-table-sticky-plugin) [![license](https://img.shields.io/npm/l/vue3-el-table-sticky-plugin.svg)](https://www.npmjs.com/package/vue3-el-table-sticky-plugin) [![vue](https://img.shields.io/badge/vue-3.x-brightgreen.svg)](https://vuejs.org/) [![element--plus](https://img.shields.io/badge/element--plus-2.x-blue.svg)](https://element-plus.org/)
+- Documentation: [https://xcy960815.github.io/vue3-el-table-sticky-plugin/](https://xcy960815.github.io/vue3-el-table-sticky-plugin/)
+- Online Demo: [https://xcy960815.github.io/vue3-el-table-sticky-plugin/guide/demo](https://xcy960815.github.io/vue3-el-table-sticky-plugin/guide/demo)
+- 中文说明：[README.zh-CN.md](./README.zh-CN.md)
 
-让 Element Plus `el-table` 表头在页面或业务滚动容器中吸顶的 Vue 3 指令插件。
+`vue3-el-table-sticky-plugin` sticks the header of an Element Plus `el-table` while the page, or a chosen container, scrolls.
 
-## Documentation
-
-- Docs site: <https://xcy960815.github.io/vue3-el-table-sticky-plugin/>
-- Online demo: <https://xcy960815.github.io/vue3-el-table-sticky-plugin/guide/demo>
-- 中文文档: <https://xcy960815.github.io/vue3-el-table-sticky-plugin/zh-CN/>
+Put `v-sticky` on the table. The header is positioned with `fixed`. `strategy: 'sticky'` logs a notice and uses that same `fixed` path. The peer dependency is `vue@^3.2.13`. The app also needs Element Plus 2.x.
 
 ## Features
 
-- 支持 `el-table` 表头吸顶，不侵入表格数据和列配置。
-- 支持页面默认滚动容器，也支持指定业务滚动容器。
-- 支持多个表格实例同时使用，状态按表格隔离。
-- 支持监听外部区域高度变化后重新计算吸顶位置。
-- 自动处理挂载、更新、卸载时的事件和 `ResizeObserver` 清理。
-- 提供 TypeScript 类型声明。
+- Sticky header for `el-table`, without changing columns or row data
+- Page scroll, or a scroll container you name
+- Several tables on one page, each with its own state
+- Recalculates when watched elements change size
+- Recovers when a table is moved into another scroll container
+- TypeScript definitions included
 
-## Requirements
-
-- Vue `^3.2.13`
-- Element Plus `2.x`
-- Node `^20.19.0 || >=22.12.0` 用于本仓库开发和构建
-
-## Install
+## Installation
 
 ```bash
-npm install vue3-el-table-sticky-plugin
+npm install vue3-el-table-sticky-plugin -S
 ```
 
 ```bash
@@ -44,53 +36,25 @@ import { createApp } from 'vue';
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
 import Vue3TableStickyPlugin from 'vue3-el-table-sticky-plugin';
-
 import App from './App.vue';
 
-const app = createApp(App);
-
-app.use(ElementPlus);
-app.use(Vue3TableStickyPlugin);
-app.mount('#app');
+createApp(App).use(ElementPlus).use(Vue3TableStickyPlugin).mount('#app');
 ```
-
-Then use `v-sticky` on `el-table`:
 
 ```vue
 <template>
   <div class="page-scroll">
-    <div class="toolbar">
-      <!-- filters, actions, dynamic content -->
-    </div>
-
-    <el-table
-      v-sticky="{
-        offsetTop: 0,
-        scrollTarget: '.page-scroll',
-        observe: ['.toolbar'],
-        boundary: 'table',
-      }"
-      :data="tableData"
-      border
-    >
-      <el-table-column prop="date" label="Date" width="180" />
-      <el-table-column prop="name" label="Name" width="180" />
-      <el-table-column prop="address" label="Address" />
+    <el-table v-sticky="{ offsetTop: 0, scrollTarget: '.page-scroll' }" :data="tableData">
+      <el-table-column prop="name" label="Name" />
     </el-table>
   </div>
 </template>
 
 <script setup lang="ts">
-const tableData = [
-  {
-    date: '2016-05-03',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-];
+const tableData = [{ name: 'Tom' }];
 </script>
 
-<style scoped>
+<style>
 .page-scroll {
   height: 100%;
   overflow-y: auto;
@@ -98,150 +62,76 @@ const tableData = [
 </style>
 ```
 
-## Options
+The table has to sit inside the element that actually scrolls. `scrollTarget` is that element.
 
-`v-sticky` accepts an object:
+## CDN / UMD Example
 
-```ts
-interface StickyOptions {
-  offsetTop?: number | (() => number);
-  scrollTarget?: string | HTMLElement | Window;
-  boundary?: 'table' | 'scroll-container' | string | HTMLElement;
-  observe?: Array<string | HTMLElement>;
-  strategy?: 'auto' | 'fixed' | 'sticky';
-  zIndex?: number | 'auto';
-  activeClass?: string;
+Load Vue 3 first. This UMD build reads Vue from the global `vue`. The plugin itself is `Vue3ElTableStickyPlugin`, and the install object is the default export. The page still needs Element Plus.
 
-  /** @deprecated Use offsetTop instead. */
-  top?: number;
-  /** @deprecated Use scrollTarget instead. */
-  parent?: string;
-  /** @deprecated Use observe instead. */
-  willBeChangeElementClasses?: string[];
-}
+```html
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script>
+  window.vue = Vue;
+</script>
+<script src="https://unpkg.com/vue3-el-table-sticky-plugin/dist/vue3-el-table-sticky-plugin.umd.js"></script>
+<script>
+  Vue.createApp({}).use(Vue3ElTableStickyPlugin.default).mount('#app');
+</script>
 ```
+
+The named export `vue3TableStickyPlugin` is the `install` function.
+
+## API
+
+`v-sticky` takes an object. The same fields can be passed to `app.use(Vue3TableStickyPlugin, options)` as defaults. A value on the directive wins over the install option.
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `offsetTop` | `number \| (() => number)` | Current table header top | Sticky offset from the active scroll viewport top. |
-| `scrollTarget` | `string \| HTMLElement \| Window` | Nearest scroll parent, then window | Scroll container used for sticky calculations. |
-| `boundary` | `'table' \| 'scroll-container' \| string \| HTMLElement` | `'table'` | Boundary that releases the sticky header when its bottom is reached. |
-| `observe` | `Array<string \| HTMLElement>` | `[]` | Elements whose size changes should trigger layout recalculation. |
-| `strategy` | `'auto' \| 'fixed' \| 'sticky'` | `'auto'` | Reserved strategy option; current engine renders with fixed positioning. Explicitly passing `'sticky'` logs a notice and falls back. |
-| `zIndex` | `number \| 'auto'` | `'auto'` | Sticky header stacking order; `'auto'` derives from the largest in-table z-index and staggers automatically when multiple headers stick at once. |
-| `activeClass` | `string` | `'fixed'` | Class added while sticky is active. |
-| `top` | `number` | - | Deprecated alias of `offsetTop`. |
-| `parent` | `string` | - | Deprecated alias of `scrollTarget`. |
-| `willBeChangeElementClasses` | `string[]` | - | Deprecated alias of `observe`. |
+| `offsetTop` | `number \| (() => number)` | current header top | Gap between the stuck header and the top of the scrollport |
+| `scrollTarget` | `string \| HTMLElement \| Window` | nearest scrollable ancestor, then `window` | Element that scrolls |
+| `boundary` | `'table' \| 'scroll-container' \| string \| HTMLElement` | `'table'` | Releases the header when this boundary's bottom is reached |
+| `observe` | `Array<string \| HTMLElement>` | `[]` | Elements whose size changes should recalculate the header |
+| `strategy` | `'auto' \| 'fixed' \| 'sticky'` | `'auto'` | Rendering path. `'sticky'` is reserved and falls back to `fixed` |
+| `zIndex` | `number \| 'auto'` | `'auto'` | Stacking order. `'auto'` derives a value and staggers later stuck headers |
+| `activeClass` | `string` | `'fixed'` | Class added on the header while it is stuck |
+| `top` | `number` | — | Deprecated name for `offsetTop` |
+| `parent` | `string` | — | Deprecated name for `scrollTarget` |
+| `willBeChangeElementClasses` | `string[]` | — | Deprecated name for `observe` |
 
-Priority:
+## Notes
 
-1. Directive value, for example `v-sticky="{ offsetTop: 64 }"`.
-2. Plugin install option, for example `app.use(Vue3TableStickyPlugin, { offsetTop: 64 })`.
-3. Plugin fallback.
+- `scrollTarget` must contain the table. A target that does not contain it is ignored, and the plugin warns.
+- On a page with several tables, a selector `scrollTarget` uses the nearest matching ancestor of that table.
+- `observe` and `boundary` selectors prefer the table itself or an ancestor. Otherwise they use the candidate that shares the closest ancestor with the table.
+- A selector that matches nothing is ignored, with a console warning. A missing watched element does not stop the header.
+- A fixed `height` on `el-table` makes Element Plus scroll the table body. This plugin still follows the outer scroll container, and it logs a notice.
+- When the table is moved into another container, the plugin attaches its listeners to the new container before the next render.
+- While the header is stuck it receives `activeClass`. The default class is `fixed`.
 
-## Global Defaults
+## Build Artifacts
 
-You can provide default options when installing the plugin:
+The published package currently includes:
 
-```ts
-app.use(Vue3TableStickyPlugin, {
-  offsetTop: 64,
-  scrollTarget: '.app-main',
-});
-```
+- `dist/vue3-el-table-sticky-plugin.esm.js`: ESM build
+- `dist/vue3-el-table-sticky-plugin.umd.js`: UMD build
+- `types/vue3-el-table-sticky-plugin.d.ts`: TypeScript declarations
 
-Directive options override global defaults:
-
-```vue
-<el-table
-  v-sticky="{
-    offsetTop: 0,
-    scrollTarget: '.page-scroll',
-  }"
-/>
-```
-
-## Scroll Container Rules
-
-The plugin listens to the configured scroll container. The table must be inside that container, and that same container must be the element that actually scrolls. If `scrollTarget` is omitted, the plugin searches for the nearest scrollable ancestor and falls back to the window.
-
-Recommended:
-
-```css
-.page-scroll {
-  height: 100%;
-  overflow-y: auto;
-}
-```
-
-Avoid testing a parent scroll case with a fixed-height `el-table` if your goal is to verify outer container scrolling. Element Plus will make the table body scroll internally when `height` is set, while this plugin is listening to the configured parent.
-
-## Demo Routes
-
-This repository includes a Vite demo with one test case per route:
-
-| Route              | Case                                                       |
-| ------------------ | ---------------------------------------------------------- |
-| `/#/basic-body`    | Default body scroll behavior.                              |
-| `/#/parent-scroll` | Custom parent scroll container.                            |
-| `/#/multi-table`   | Multiple sticky tables in the same scroll container.       |
-| `/#/dynamic-top`   | Recalculate sticky position when a toolbar changes height. |
-
-Run the demo:
+## Development
 
 ```bash
 pnpm install
-pnpm dev
-```
-
-Run the docs site:
-
-```bash
-pnpm docs:dev
+pnpm run dev
+pnpm run lint
+pnpm run build
 ```
 
 ## Project Structure
 
-```text
-plugin/     Source code published as the plugin
-src/        Vite demo app
-types/      Bundled TypeScript declarations
-dist/       Library build output
-```
-
-## Scripts
-
-```bash
-pnpm dev            # Start the Vite demo
-pnpm docs:dev       # Start the VitePress docs site
-pnpm docs:build     # Build the docs site
-pnpm build          # Build the plugin package
-pnpm build:plugin   # Build plugin JS and declaration files
-pnpm build:demo     # Build the demo app
-pnpm lint           # Run ESLint
-pnpm format:check   # Check Prettier formatting
-```
-
-## Build Output
-
-The package exposes:
-
-- `dist/vue3-el-table-sticky-plugin.esm.js`
-- `dist/vue3-el-table-sticky-plugin.umd.js`
-- `types/vue3-el-table-sticky-plugin.d.ts`
-
-## Notes
-
-- `scrollTarget`, `boundary`, and `observe` support CSS selectors where a selector is accepted.
-- On pages with multiple tables, `scrollTarget` resolves to the nearest matching ancestor of the table; `observe` and `boundary` selectors match the table itself or an ancestor first, otherwise the candidate sharing the closest common ancestor with the table, so tables no longer all bind to the same global element.
-- The scroll container passed as `scrollTarget` must contain the table; otherwise the option is ignored with a warning.
-- `parent` and `willBeChangeElementClasses` remain available as deprecated compatibility aliases.
-- Invalid selectors are ignored with a console warning.
-- Missing optional watched elements do not block rendering.
-- The plugin adds and removes the `fixed` class on the Element Plus table header wrapper while sticky is active.
-- When a table is moved into another scroll container at runtime, the plugin re-resolves the container and migrates its listeners before the next render.
-- When the table body scrolls internally (usually caused by a fixed `height` on `el-table`), the sticky header follows the outer scroll container and the plugin logs a notice.
+- `plugin/index.ts`: directive install
+- `plugin/table-sticky.ts`: option resolution and lifecycle
+- `plugin/controller.ts`: sticky state
+- `src/`: local demo
+- `vite.plugin.config.ts`: library build
 
 ## License
 
